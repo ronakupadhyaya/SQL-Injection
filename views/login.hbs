@@ -1,0 +1,16 @@
+<h1>Secure login page (for real this time?)</h1>
+
+{{#if user}}
+<h2>You are logged in as {{user}}</h2>
+
+<form method="post" action="/logout">
+  <input type="submit" value="Logout">
+</form>
+{{else}}
+<h2>You are not logged in<h2>
+<form method="post">
+  Username: <input type="text" name="username">
+  Password: <input type="password" name="password">
+  <input type="submit" value="Login">
+</form>
+{{/if}}
