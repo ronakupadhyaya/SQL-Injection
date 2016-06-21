@@ -2,10 +2,62 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Security demo</title>
+  <title>{{title}} Hack This App</title>
+  <link href="/bootstrap.min.css" rel="stylesheet">
   <script src="/jquery.min.js"></script>
+  <script src="/bootstrap.min.js"></script>
+  <style>
+    body {
+      padding-top: 70px;
+    }
+
+    #horizons-nav,
+    #horizons-nav .navbar-nav a {
+      background-color: rgb(255, 54, 73);
+      color: white;
+    }
+
+    #horizons-nav .navbar-brand,
+    #horizons-nav .navbar-nav a {
+      color: white;
+    }
+  </style>
 </head>
 <body>
+  <nav class="navbar navbar-default navbar-fixed-top" id="horizons-nav">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Steal This App</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        {{#if user}}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            Logged in as {{user}} <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Logout</a></li>
+          </ul>
+        </li>
+        {{else}}
+        <li>
+          <a href="#">
+          Not logged in
+          </a>
+        </li>
+        {{/if}}
+      </ul>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+    </div>
+  </nav>
   {{{body}}}
 </body>
 </html>

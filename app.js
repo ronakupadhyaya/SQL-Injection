@@ -10,7 +10,7 @@ var app = express();
 
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
-  return process.ENV[key] || key;
+  return process.env[key] || key;
 }
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
@@ -22,6 +22,7 @@ app.use(cookieParser());
 
 app.get('/', function(req, res) {
   res.render('stage1', {
+    user: 'test user',
     stage2: getSecret('stage2')
   });
 });
