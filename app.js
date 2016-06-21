@@ -22,13 +22,12 @@ app.use(cookieParser());
 
 app.get('/', function(req, res) {
   res.render('stage1', {
-    user: 'test user',
     stage2: getSecret('stage2')
   });
 });
 
 app.get('/' + getSecret('stage2'), function(req, res) {
-  res.render('secret');
+  res.render('stage2');
 });
 
 var models = require('./models');
