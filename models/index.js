@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-mongoose.connect(require('./connect'));
+mongoose.connect(process.ENV.MONGODB_URI || require('./connect'));
 
 var Donation = mongoose.model('donation', {
   amount: {
