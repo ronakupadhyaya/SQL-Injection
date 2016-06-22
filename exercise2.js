@@ -77,9 +77,44 @@ router.use(function(req, res, next){
 });
 
 router.get('/' + getSecret('stage6'), function(req, res) {
-  res.render('stage6', {
-    user: req.user
+  res.header('X-XSS-Protection', 0);
+  models.Post.find().populate('author').exec(function(err, posts) {
+    if (err) {
+      res.status(500).render('stage6', {
+        user: req.user,
+        error: err.errmsg
+      })
+    } else {
+      res.render('stage6', {
+        user: req.user,
+        posts: posts
+      });
+    }
   });
+});
+
+router.post('/' + getSecret('stage6'), function(req, res) {
+  if (! req.body.body) {
+    res.status(400).render('stage6', {
+      user: req.user,
+      error: "Post body is required."
+    });
+  } else {
+    var post = new models.Post({
+      author: req.user._id,
+      body: req.body.body
+    })
+    post.save(function(err) {
+      if (err) {
+        res.status(500).render('stage6', {
+          user: req.user,
+          error: err.errmsg
+        })
+      } else {
+        res.redirect(getSecret('stage6'));
+      }
+    });
+  }
 });
 // insecure change password
 // do not verify that :id === req.user._id

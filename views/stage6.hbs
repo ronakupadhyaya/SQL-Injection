@@ -1,7 +1,42 @@
 <div class="row">
   <div class="col-xs-12">
     <div class="page-header">
-      <h1>Stage 6: Logout your enemies</h1>
+      <h1>Stage 6: Stealing cookies</h1>
     </div>
+    <p>
+      A website is only as secure as its cookies. If you can steal someone's
+      cookie you can impersonate them.
+    </p>
+    <p>
+      This page is vulnerable because it prints out
+    </p>
+    <p>
+      Go to <a href="stage7">stage 7 when you get that working</a>
+    </p>
+    <div class="page-header">
+      <h2>Guestbook</h2>
+    </div>
+    <form method="post">
+      {{#if error}}
+        <div class="alert alert-warning">
+          {{error}}
+        </div>
+      {{/if}}
+      <div class="form-group">
+        <textarea name="body" rows="4" style="width: 100%"></textarea>
+      </div>
+      <button type="submit" class="btn btn-default">Post</button>
+    </form>
+
+    <div class="page-header">
+      <h3>Posts</h3>
+    </div>
+
+    {{#each posts}}
+    <div class="well">
+      <p><strong>Author</strong> {{author.username}}</p>
+      {{{body}}}
+    </div>
+    {{/each}}
   </div>
 </div>

@@ -25,5 +25,16 @@ module.exports = {
       type: Number,
       required: true
     }
+  }),
+  Post: mongoose.model('post', {
+    body: {
+      type: String,
+      required: true
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'user'
+    }
   })
 };
