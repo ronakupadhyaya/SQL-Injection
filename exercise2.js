@@ -4,11 +4,6 @@ var router = require('express').Router();
 var models = require('./models');
 var passport = require('./passportInit')(router);
 
-// Secrets default to their name, unless there are process.ENV overrides
-function getSecret(key) {
-  return process.env[key] || key;
-}
-
 router.get('/', function(req, res) {
   res.render('stage5', {
     error: req.query.error,
