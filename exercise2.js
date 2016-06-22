@@ -137,11 +137,24 @@ router.post('/messenger', function(req, res) {
   }
 });
 
-// insecure change password
-// do not verify that :id === req.user._id
-
-// XSS
-
-// CSRF
+router.post('/delete/:messageId', function(req, res) {
+  if (! req.params.messageId) {
+    res.status(400).render('messenger', {
+      user: req.user,
+      error: 'Message id missing'
+    });
+  } else {
+    models.Message.findByIdAndRemove(req.params.messageId, function(err) {
+      if (err) {
+        res.status(400).render('messenger', {
+          user: req.user,
+          error: err.errmsg
+        });
+      } else {
+        res.redirect('/exercise2/messenger?success=Deleted!');
+      }
+    });
+  }
+});
 
 module.exports = router;

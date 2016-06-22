@@ -42,6 +42,9 @@
 
       {{#each messages}}
       <div class="well">
+        <form action="/exercise2/delete/{{_id}}" method="post" class="form-inline">
+          <button class="btn btn-danger pull-right">Delete</button>
+        </form>
         <p><strong>From</strong> {{from.username}}</p>
         <p><strong>To</strong> {{../user.username}}</p>
         <p><strong>Message</strong> {{{body}}}</p>
