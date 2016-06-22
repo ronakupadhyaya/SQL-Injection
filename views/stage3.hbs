@@ -1,22 +1,31 @@
 <div class="row">
   <div class="col-xs-12">
     <div class="page-header">
-      <h1>Stage 3: JSON APIs and Mongoose</h1>
+      <h1>Stage 3: JSON APIs and Mongoose (Bonus)</h1>
     </div>
     <p>
-      JSON APIs are extremely powerful but with their power comes some danger.
       For stage 4, we provide you an insecure JSON endpoint at
       <code>POST /{{stage3}}</code>.
+      This enpoint takes a JSON object with the property <code>key</code>,
+      and if key matches the key stored in MongoDb it returns the URL
+      for Stage 4. Otherwise it responds with status
+      <code>401: Unauthorized</code>.
     </p>
     <p>
-      It takes input of the form <code>{"key": "secret key"}</code>. When
-      the key is correct, it will send you response of the form
-      <code>{"key": "secret key", "stage4url": "/url"}</code>
-      When you get this response open the URL in <code>stage4url</code>
+      Example query:
+      <pre><code>{"key": "what I think key is"}</code></pre>
+    </p>
+    <p>
+      Example response:
+      <pre><code>{"key": "secret key", "Stage 4 URL": "/url"}</code></pre>
+      When you get this response open the URL in <code>Stage 4 URL</code>
       to advance to the next stage.
     </p>
+    <div class="page-header">
+      <h2>How to crack this endpoint</h2>
+    </div>
     <p>
-      It uses <code>Secret.find()</code> to find a record from MongoDb with
+      This endpoint uses <code>Secret.find()</code> to find a record from MongoDb with
       the matching key.
     </p>
     <script src="https://gist.github.com/moose-horizons/c91e7924a0448bcfb5d5e4f63a681393.js"></script>
@@ -32,11 +41,10 @@
     </p>
     <button class="btn btn-warn" onclick="$('.hint').show()">Reveal hint</button>
     <p class="hint">
-      Make a JSON POST to <code>/{{stage3}}</code> request where <code>key</code>
-      is set to an object.
-      This object should represent a query constraint that will always be true.
-      Something along the lines of <code>{"key": {"OPERATOR": "value"}}</code>
-      where you look for all keys not equal to empty string.
+      Make a JSON POST request to <code>/{{stage3}}</code> with
+      a query operator i.e. <code>{"key": {"OPERATOR": "value"}}</code>
+      Pick a query operator like <code>$ne</code> that you can easily
+      give a value that you know will be false.
     </p>
   </div>
 </div>
