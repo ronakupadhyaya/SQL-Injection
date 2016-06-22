@@ -27,7 +27,25 @@ app.get('/', function(req, res) {
 });
 
 app.get('/' + getSecret('stage2'), function(req, res) {
-  res.render('stage2');
+  res.render('stage2', {
+    user: req.cookies.user,
+    admin: req.cookies.user === 'admin',
+    stage3: getSecret('stage3')
+  });
+});
+
+app.post('/' + getSecret('stage2'), function(req, res) {
+  console.log(req.body);
+  if (req.body.username === 'bob' && req.body.password === 'baseball') {
+    res.cookie('user', 'bob');
+    res.redirect('/' + getSecret('stage2'));
+  } else {
+    res.sendStatus(401);
+  }
+});
+
+app.get('/' + getSecret('stage3'), function(req, res) {
+  res.render('stage3');
 });
 
 var models = require('./models');
