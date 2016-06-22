@@ -4,26 +4,36 @@
       Stage 3: JSON APIs and Mongoose
     </div>
     <p>
-      JSON APIs are extremely power but with their power comes some danger.
-      For stage 4, we provide you a JSON endpoint at <code>POST /{{stage3}}</code>.
+      JSON APIs are extremely powerful but with their power comes some danger.
+      For stage 4, we provide you an insecure JSON endpoint at
+      <code>POST /{{stage3}}</code>.
     </p>
     <p>
       It takes input of the form <code>{"key": "secret key"}</code>. When
       the key is correct, it will send you response of the form
       <code>{"key": "secret key", "stage4url": "/url"}</code>
+      When you get this response open the URL in <code>stage4url</code>
+      to advance to the next stage.
+    </p>
+    <p>
       It uses <code>Secret.find()</code> to find a record from MongoDb with
       the matching key.
     </p>
     <script src="https://gist.github.com/moose-horizons/c91e7924a0448bcfb5d5e4f63a681393.js"></script>
     <p>
       Don't try to guess the key, that's impossible.
-      You can specify comparison operators when doing <code>.find()</code>.
+      You can specify query selectors when doing <code>.find()</code>.
       For example <code>{ "property": { "$ne": "x" }}</code> return all
       records where <code>property</code> does not equal <code>"x"</code>.
     </p>
+    <p>
+      <a href="https://docs.mongodb.com/manual/reference/operator/query/#query-selectors">
+      MongoDb documentation on query selectors</a>
+    </p>
     <button class="btn btn-warn" onclick="$('.hint').show()">Reveal hint</button>
     <p class="hint" style="display: none">
-      Make a JSON request where <code>key</code> is set to an object.
+      Make a JSON POST to <code>/{{stage3}}</code> request where <code>key</code>
+      is set to an object.
       This object should represent a query constraint that will always be true.
       Something along the lines of <code>{"key": {"OPERATOR": "value"}}</code>
       where you look for all keys not equal to empty string.

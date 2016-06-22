@@ -74,7 +74,7 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var key = req.body.key;
-  Secret.findOne({
+  models.Secret.findOne({
     key: key
   }, function(error, secret) {
     if (error) {
@@ -86,6 +86,7 @@ app.post('/' + getSecret('stage3'), function(req, res) {
         error: "Incorrect key"
       });
     } else {
+      secret.stage4url = "/" + getSecret('stage4');
       res.json({
         secret: secret
       });
@@ -93,20 +94,34 @@ app.post('/' + getSecret('stage3'), function(req, res) {
   });
 });
 
-// app.post('/' + getSecret('stage3'), passport.authenticate('local', {
-//   failureRedirect: '/' + getSecret('stage3'),
-//   successRedirect: '/home'
-// }));
+app.get('/' + getSecret('stage4'), function(req, res) {
+  res.render('stage4', {
+    fail: req.query.fail
+  });
+});
+
+app.post('/' + getSecret('stage3'), passport.authenticate('local', {
+  failureRedirect: '/' + getSecret('stage3'),
+  successRedirect: '/home'
+}));
+
+app.use(function(req, res, next){
+  if (req.user) {
+    next();
+  } else {
+    res.redirect('/' + getSecret('stage4') + '?fail=true';
+  }
+});
 
 app.get('/home', function(req, res) {
+  req.redirect('/profile')
 });
 
 // insecure change password
+// do not verify that :id === req.user._id
 
 // XSS
 
 // CSRF
-
-// Insecure JSON login
 
 app.listen(3000);
