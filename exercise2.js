@@ -1,11 +1,19 @@
 "use strict";
 
-var router = require('express').Router;
+var Router = require('express').Router;
 var passport = require('passport');
 var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
+var models = require('./models');
+
+// Secrets default to their name, unless there are process.ENV overrides
+function getSecret(key) {
+  return process.env[key] || key;
+}
 
 var MongoStore = require('connect-mongo')(session);
+var router = Router();
+
 router.use(session({
     secret: process.env.SECRET || 'deep secret',
     store: new MongoStore({ mongooseConnection: require('mongoose').connection})
@@ -23,11 +31,18 @@ passport.use(new LocalStrategy(
 ));
 
 router.get('/', function(req, res) {
+  res.render('stage5', {
+    error: req.query.error
+  });
 });
 
-router.post('/' + getSecret('stage3'), passport.authenticate('local', {
+router.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+router.post('/', passport.authenticate('local', {
   failureRedirect: '/' + getSecret('stage4'),
-  successRedirect: '/home'
+  successRedirect: '/exercise2?error=' + encodeURIComponent('Login failed. Bad username or password.')
 }));
 
 
@@ -42,5 +57,11 @@ router.use(function(req, res, next){
 router.get('/home', function(req, res) {
   req.redirect('/profile')
 });
+// insecure change password
+// do not verify that :id === req.user._id
+
+// XSS
+
+// CSRF
 
 module.exports = router;

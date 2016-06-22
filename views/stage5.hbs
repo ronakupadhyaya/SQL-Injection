@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="page-header">
+      <h1>Exercise 2</h1>
+    </div>
+    <p>
+      Before you start Exercise 2 make sure you complete
+      <a href="/">Exercise 1</a> first.
+    </p>
+    <p>
+      <ol>
+        <li>
+          <a href="/exercise2/signup">Create a user account for yourself</a>
+        </li>
+        <li>
+          Login &darr;
+        </li>
+      </ol>
+    </p>
+    <form method="post">
+      {{#if error}}
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{error}}
+      </div>
+      {{/if}}
+      <div class="form-group">
+        <input name="username" type="email" class="form-control" placeholder="Username">
+      </div>
+      <div class="form-group">
+        <input name="password" type="password" class="form-control" placeholder="Password">
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+</div>

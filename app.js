@@ -76,18 +76,9 @@ app.post('/' + getSecret('stage3'), function(req, res) {
 });
 
 app.get('/' + getSecret('stage4'), function(req, res) {
-  // convert this into signup
   res.render('stage4');
 });
 
-
-// app.use('/exercise2', require('./exercise2'));
-
-// insecure change password
-// do not verify that :id === req.user._id
-
-// XSS
-
-// CSRF
+app.use('/exercise2', require('./exercise2'));
 
 app.listen(3000);
