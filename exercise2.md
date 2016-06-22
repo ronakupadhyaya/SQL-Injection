@@ -49,6 +49,25 @@ their knowledge.
 
 ### b. Drive by: sending on someone's behalf
 
+There's another thing that's vulnerable on this page: the `success` query
+parameter.
+This parameter is also not sanitized before being rendered to the page, so
+we can run JavaScript with it to.
+
+1. [Success messages under normal operation](http://steal-this-app-horizons.herokuapp.com/exercise2/stage6?success=YOUR%20MESSAGE%20HERE)
+1. [Whoops this link runs JavaScript](http://steal-this-app-horizons.herokuapp.com/exercise2/stage6?success=%3Cscript%3Econsole.log%28'Another%20day%2C%20another%20XSS'%29%3C%2Fscript%3E)
+1. Create a link that makes someone send a message to you when they open
+it in their browser.
+1. See if you can get your friends to click on it.
+
+#### Putting JavaScript in URLs
+
+You can generate JavaScript to put in URLs using the `encodeURIComponent()`
+like this:
+
+```javascript
+encodeURIComponent('<script>YOUR SCRIPT HERE</script>')
+```
 
 ### c. Stealing cookies
 
