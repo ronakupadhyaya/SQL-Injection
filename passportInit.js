@@ -8,7 +8,9 @@ module.exports = function(router) {
   var MongoStore = require('connect-mongo')(session);
 
   router.use(session({
-    httpOnly: false,
+    cookie: {
+      httpOnly: false
+    },
     secret: process.env.SECRET || 'deep secret',
     store: new MongoStore({ mongooseConnection: require('mongoose').connection})
   }));
