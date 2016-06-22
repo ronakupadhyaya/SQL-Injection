@@ -42,14 +42,22 @@
       </div>
       <ul class="nav navbar-nav navbar-right">
         {{#if user}}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            Logged in as {{user}} <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Logout</a></li>
-          </ul>
-        </li>
+          {{#if user.username}}
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              Logged in as {{user.username}} <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/exercise2/logout">Logout</a></li>
+            </ul>
+          </li>
+          {{else}}
+          <li>
+            <a href="#">
+            Logged in as {{user}}
+            </a>
+          </li>
+          {{/if}}
         {{else}}
         <li>
           <a href="#">

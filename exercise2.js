@@ -1,47 +1,13 @@
 "use strict";
 
-var Router = require('express').Router;
-var passport = require('passport');
-var session = require('express-session');
-var LocalStrategy = require('passport-local').Strategy;
+var router = require('express').Router();
 var models = require('./models');
+var passport = require('./passportInit')(router);
 
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
   return process.env[key] || key;
 }
-
-var MongoStore = require('connect-mongo')(session);
-var router = Router();
-
-router.use(session({
-    secret: process.env.SECRET || 'deep secret',
-    store: new MongoStore({ mongooseConnection: require('mongoose').connection})
-}));
-
-passport.serializeUser(function(user, done) {
-  done(null, user._id);
-});
-
-passport.deserializeUser(function(id, done) {
-  models.User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    models.User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (user.password !== password) { return done(null, false); }
-      return done(null, user);
-    });
-  }
-));
-
-router.use(passport.initialize());
-router.use(passport.session());
 
 router.get('/', function(req, res) {
   res.render('stage5', {
@@ -52,7 +18,7 @@ router.get('/', function(req, res) {
 
 router.post('/', passport.authenticate('local', {
   failureRedirect: '/exercise2?error=' + encodeURIComponent('Login failed. Bad username or password.'),
-  successRedirect: '/exercise2'
+  successRedirect: '/exercise2/' + getSecret('stage6')
 }));
 
 router.get('/signup', function(req, res) {
@@ -96,17 +62,24 @@ router.post('/signup', function(req, res) {
   });
 });
 
+router.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/exercise2');
+});
 
 router.use(function(req, res, next){
   if (req.user) {
     next();
   } else {
-    res.redirect('/' + getSecret('stage4') + '?fail=true');
+    res.redirect('/exercise2?error=' +
+        encodeURIComponent('You must be logged in to access this page.'))
   }
 });
 
-router.get('/home', function(req, res) {
-  req.redirect('/profile')
+router.get('/' + getSecret('stage6'), function(req, res) {
+  res.render('stage6', {
+    user: req.user
+  });
 });
 // insecure change password
 // do not verify that :id === req.user._id
