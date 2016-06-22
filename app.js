@@ -95,6 +95,7 @@ app.post('/' + getSecret('stage3'), function(req, res) {
 });
 
 app.get('/' + getSecret('stage4'), function(req, res) {
+  // convert this into signup
   res.render('stage4', {
     fail: req.query.fail
   });
@@ -109,7 +110,7 @@ app.use(function(req, res, next){
   if (req.user) {
     next();
   } else {
-    res.redirect('/' + getSecret('stage4') + '?fail=true';
+    res.redirect('/' + getSecret('stage4') + '?fail=true');
   }
 });
 
