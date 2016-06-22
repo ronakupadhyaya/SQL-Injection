@@ -16,17 +16,22 @@
       There's a user <code>bob</code> with a very insecure password
       <code>baseball</code>
       Log in as him and see what the cookie looks like.
+      Then try to log in as <code>admin</code>.
     </p>
     <p>
-      Then try to log in as <code>admin</code>
+      You can read cookies in the DevTools console
+      <pre><code>document.cookie = 'COOKIE NAME=COOKIE VALUE'</code></pre>
+      You can update cookies too:
+      <pre><code>document.cookie = 'COOKIE NAME=COOKIE VALUE'</code></pre>
     </p>
     <p>
-      Install
+      Or you can install
       <a href="https://chrome.google.com/webstore/detail/cookies/iphcomljdfghbkdcfndaijbokpgddeno?hl=en">Cookies Chrome extension</a>
       to view and modify your cookies.
     </p>
     <button class="btn btn-default" onclick="$('.hint').show()">Reveal hint</button>
     <p class="hint">
+      Set the cookie <code>user</code> to the value <code>admin</code>.
     </p>
     <form method="post" class="form-inline" style="margin-top: 10px">
       Username: <input type="text" name="username">
