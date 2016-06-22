@@ -3,9 +3,6 @@
 var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
-var passport = require('passport');
-var session = require('express-session');
-var LocalStrategy = require('passport-local').Strategy;
 var models = require('./models');
 
 var cookieParser = require('cookie-parser');
@@ -17,11 +14,6 @@ function getSecret(key) {
   return process.env[key] || key;
 }
 
-var MongoStore = require('connect-mongo')(session);
-app.use(session({
-    secret: process.env.SECRET || 'deep secret',
-    store: new MongoStore({ mongooseConnection: require('mongoose').connection})
-}));
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
@@ -30,17 +22,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    models.User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (user.password !== password) { return done(null, false); }
-      return done(null, user);
-    });
-  }
-));
 
 app.get('/', function(req, res) {
   res.render('stage1', {
@@ -96,27 +77,11 @@ app.post('/' + getSecret('stage3'), function(req, res) {
 
 app.get('/' + getSecret('stage4'), function(req, res) {
   // convert this into signup
-  res.render('stage4', {
-    fail: req.query.fail
-  });
+  res.render('stage4');
 });
 
-app.post('/' + getSecret('stage3'), passport.authenticate('local', {
-  failureRedirect: '/' + getSecret('stage3'),
-  successRedirect: '/home'
-}));
 
-app.use(function(req, res, next){
-  if (req.user) {
-    next();
-  } else {
-    res.redirect('/' + getSecret('stage4') + '?fail=true');
-  }
-});
-
-app.get('/home', function(req, res) {
-  req.redirect('/profile')
-});
+// app.use('/exercise2', require('./exercise2'));
 
 // insecure change password
 // do not verify that :id === req.user._id
