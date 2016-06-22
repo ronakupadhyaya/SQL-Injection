@@ -54,8 +54,8 @@ parameter.
 This parameter is also not sanitized before being rendered to the page, so
 we can run JavaScript with it to.
 
-1. [Success messages under normal operation](http://steal-this-app-horizons.herokuapp.com/exercise2/stage6?success=YOUR%20MESSAGE%20HERE)
-1. [Whoops this link runs JavaScript](http://steal-this-app-horizons.herokuapp.com/exercise2/stage6?success=%3Cscript%3Econsole.log%28'Another%20day%2C%20another%20XSS'%29%3C%2Fscript%3E)
+1. [Success messages under normal operation](http://steal-this-app-horizons.herokuapp.com/exercise2/messenger?success=YOUR%20MESSAGE%20HERE)
+1. [Whoops this link runs JavaScript](http://steal-this-app-horizons.herokuapp.com/exercise2/messenger?success=%3Cscript%3Econsole.log%28'Another%20day%2C%20another%20XSS'%29%3C%2Fscript%3E)
 1. Create a link that makes someone send a message to you when they open
 it in their browser.
 1. See if you can get your friends to click on it.
