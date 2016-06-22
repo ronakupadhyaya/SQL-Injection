@@ -1,5 +1,6 @@
 "use strict";
 
+var morgan = require('morgan');
 var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(morgan('combined'));
 
 app.get('/', function(req, res) {
   res.render('stage1', {
