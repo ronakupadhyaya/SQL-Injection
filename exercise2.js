@@ -18,7 +18,7 @@ router.get('/', function(req, res) {
 
 router.post('/', passport.authenticate('local', {
   failureRedirect: '/exercise2?error=' + encodeURIComponent('Login failed. Bad username or password.'),
-  successRedirect: '/exercise2/' + getSecret('stage6')
+  successRedirect: '/exercise2/messenger'
 }));
 
 router.get('/signup', function(req, res) {
@@ -76,34 +76,34 @@ router.use(function(req, res, next){
   }
 });
 
-router.get('/' + getSecret('stage6'), function(req, res) {
+router.get('/messenger', function(req, res) {
   res.header('X-XSS-Protection', 0);
   models.Message.find({
     to: req.user._id
   }).populate('from').exec(function(err, messages) {
     if (err) {
-      res.status(500).render('stage6', {
+      res.status(500).render('messenger', {
         user: req.user,
         error: err.errmsg
       })
     } else {
-      res.render('stage6', {
+      res.render('messenger', {
         user: req.user,
         messages: messages,
-        success: req.query.success
+              success: req.query.success
       });
     }
   });
 });
 
-router.post('/' + getSecret('stage6'), function(req, res) {
+router.post('/messenger', function(req, res) {
   if (! req.body.body) {
-    res.status(400).render('stage6', {
+    res.status(400).render('messenger', {
       user: req.user,
       error: "Post body is required."
     });
   } else if (! req.body.to) {
-    res.status(400).render('stage6', {
+    res.status(400).render('messenger', {
       user: req.user,
       error: "To field is required."
     });
@@ -112,12 +112,12 @@ router.post('/' + getSecret('stage6'), function(req, res) {
       username: req.body.to
     }, function(err, toUser) {
       if (err) {
-        res.status(400).render('stage6', {
+        res.status(400).render('stagemessenger', {
           user: req.user,
           error: err.errmsg
         });
       } else if (! toUser) {
-        res.status(400).render('stage6', {
+        res.status(400).render('messenger', {
           user: req.user,
           error: "No such user: " + req.body.to
         });
@@ -129,12 +129,12 @@ router.post('/' + getSecret('stage6'), function(req, res) {
         });
         message.save(function(err) {
           if (err) {
-            res.status(500).render('stage6', {
+            res.status(500).render('messenger', {
               user: req.user,
               error: err.errmsg,
             })
           } else {
-            res.redirect(getSecret('stage6') + '?success=Sent!');
+            res.redirect('messenger?success=Sent!');
           }
         });
       }
