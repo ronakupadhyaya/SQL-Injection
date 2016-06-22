@@ -3,6 +3,9 @@
 var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
+var passport = require('passport');
+var session = require('express-session');
+
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -12,6 +15,12 @@ var app = express();
 function getSecret(key) {
   return process.env[key] || key;
 }
+
+var MongoStore = require('connect-mongo')(session);
+app.use(session({
+    secret: process.env.SECRET || 'deep secret',
+    store: new MongoStore()
+}));
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
