@@ -5,10 +5,10 @@
     </div>
     {{#unless user}}
     <p>
-      Congrats! You've completed Stage 1.
+      Congrats! You have completed Stage 1.
     </p>
     <p>
-      Now you're ready to log in. This page sets an insecure cookie after
+      This page sets an insecure cookie after
       a successful login. Let's try to mess with it so we can log in as
       someone else.
     </p>
@@ -20,7 +20,10 @@
     <p>
       Then try to log in as <code>admin</code>
     </p>
-    <form method="post" class="form-inline">
+    <button class="btn btn-default" onclick="$('.hint').show()">Reveal hint</button>
+    <p class="hint">
+    </p>
+    <form method="post" class="form-inline" style="margin-top: 10px">
       Username: <input type="text" name="username">
       Password: <input type="text" name="password">
       <input type="submit" value="Login">
