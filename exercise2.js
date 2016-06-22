@@ -78,7 +78,9 @@ router.use(function(req, res, next){
 
 router.get('/' + getSecret('stage6'), function(req, res) {
   res.header('X-XSS-Protection', 0);
-  models.Post.find().populate('author').exec(function(err, posts) {
+  models.Message.find({
+    to: req.user._id
+  }).populate('from').exec(function(err, messages) {
     if (err) {
       res.status(500).render('stage6', {
         user: req.user,
@@ -87,7 +89,8 @@ router.get('/' + getSecret('stage6'), function(req, res) {
     } else {
       res.render('stage6', {
         user: req.user,
-        posts: posts
+        messages: messages,
+        success: req.query.success
       });
     }
   });
@@ -99,23 +102,46 @@ router.post('/' + getSecret('stage6'), function(req, res) {
       user: req.user,
       error: "Post body is required."
     });
+  } else if (! req.body.to) {
+    res.status(400).render('stage6', {
+      user: req.user,
+      error: "To field is required."
+    });
   } else {
-    var post = new models.Post({
-      author: req.user._id,
-      body: req.body.body
-    })
-    post.save(function(err) {
+    models.User.findOne({
+      username: req.body.to
+    }, function(err, toUser) {
       if (err) {
-        res.status(500).render('stage6', {
+        res.status(400).render('stage6', {
           user: req.user,
           error: err.errmsg
-        })
+        });
+      } else if (! toUser) {
+        res.status(400).render('stage6', {
+          user: req.user,
+          error: "No such user: " + req.body.to
+        });
       } else {
-        res.redirect(getSecret('stage6'));
+        var message = new models.Message({
+          from: req.user._id,
+          to: toUser._id,
+          body: req.body.body
+        });
+        message.save(function(err) {
+          if (err) {
+            res.status(500).render('stage6', {
+              user: req.user,
+              error: err.errmsg,
+            })
+          } else {
+            res.redirect(getSecret('stage6') + '?success=Sent!');
+          }
+        });
       }
     });
   }
 });
+
 // insecure change password
 // do not verify that :id === req.user._id
 

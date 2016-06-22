@@ -26,12 +26,17 @@ module.exports = {
       required: true
     }
   }),
-  Post: mongoose.model('post', {
+  Message: mongoose.model('message', {
     body: {
       type: String,
       required: true
     },
-    author: {
+    to: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'user'
+    },
+    from: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'user'
