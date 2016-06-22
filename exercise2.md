@@ -5,7 +5,7 @@
 1. Create a user account on [http://steal-this-app-horizons.herokuapp.com/exercise2](http://steal-this-app-horizons.herokuapp.com/exercise2)
 1. Login!
 
-## Part 1: Insecure Messenger
+## Part 1: Insecure Messenger Cross-site Scripting (XSS)
 
 Insecure messenger lets you send messages to other users on Steal This App.
 Unfortunately, it is vulnerable to Cross-Site Scripting (XSS) attacks.
@@ -86,7 +86,7 @@ steal their cookie!
   </script>
   ```
 
-## Part 2: Fix Insecure Messenger
+## Part 2: Fix XSS vulnerabilities
 
 TODO
 
@@ -97,6 +97,14 @@ TODO
 ```
 {{secure}}
 ```
+
+## Part 3: Insecure Messenger Cross-site Request Forgery (CSRF)
+
+### a. Logout your enemies
+
+### (Bonus) b. More ways to send messages
+
+### (Bonus) Fix CSRF vulnerabilities
 
 ## Done!
 
