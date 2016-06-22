@@ -5,7 +5,8 @@ var express = require('express');
 var exphbs  = require('express-handlebars');
 var passport = require('passport');
 var session = require('express-session');
-
+var LocalStrategy = require('passport-local').Strategy;
+var models = require('./models');
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -19,7 +20,7 @@ function getSecret(key) {
 var MongoStore = require('connect-mongo')(session);
 app.use(session({
     secret: process.env.SECRET || 'deep secret',
-    store: new MongoStore()
+    store: new MongoStore({ mongooseConnection: require('mongoose').connection})
 }));
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
@@ -27,7 +28,19 @@ app.set('view engine', 'hbs');
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 app.use(cookieParser());
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    models.User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (user.password !== password) { return done(null, false); }
+      return done(null, user);
+    });
+  }
+));
 
 app.get('/', function(req, res) {
   res.render('stage1', {
@@ -54,49 +67,46 @@ app.post('/' + getSecret('stage2'), function(req, res) {
 });
 
 app.get('/' + getSecret('stage3'), function(req, res) {
-  res.render('stage3');
-});
-
-var models = require('./models');
-
-app.get('/donate', function(req, res) {
-  models.Donation.find(function(err, donations) {
-    res.render('donate', {
-      donations: donations
-    });
+  res.render('stage3',{
+    stage3: getSecret('stage3')
   });
 });
 
-app.post('/donate', function(req, res) {
-  req.body.amount = parseInt(req.body.amount);
-  var d = new Donation(req.body);
-  d.save(function(err) {
-    if (err) {
-      res.status(400).json(err);
+app.post('/' + getSecret('stage3'), function(req, res) {
+  var key = req.body.key;
+  Secret.findOne({
+    key: key
+  }, function(error, secret) {
+    if (error) {
+      res.status(400).json({
+        error: error
+      });
+    } else if (!secret) {
+      res.status(401).json({
+        error: "Incorrect key"
+      });
     } else {
-      res.redirect('/donate');
+      res.json({
+        secret: secret
+      });
     }
   });
 });
 
-app.get('/login', function(req, res) {
-  res.render('login', {
-    user: req.cookies.user
-  });
+// app.post('/' + getSecret('stage3'), passport.authenticate('local', {
+//   failureRedirect: '/' + getSecret('stage3'),
+//   successRedirect: '/home'
+// }));
+
+app.get('/home', function(req, res) {
 });
 
-app.post('/login', function(req, res) {
-  if (req.body.username === 'user' && req.body.password === 'pass') {
-    res.cookie('user', req.body.username);
-    res.redirect('/login');
-  } else {
-    res.sendStatus(401);
-  }
-});
+// insecure change password
 
-app.post('/logout', function(req, res) {
-  res.clearCookie('user');
-  res.redirect('/login');
-});
+// XSS
+
+// CSRF
+
+// Insecure JSON login
 
 app.listen(3000);

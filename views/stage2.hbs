@@ -1,38 +1,36 @@
-<div class="containter">
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="page-header">
-        <h1>Stage 2: Insecure</h1>
-      </div>
-      {{#unless user}}
-      <p>
-        Congrats! You've completed Stage 1.
-      </p>
-      <p>
-        Now you're ready to log in. This page sets an insecure cookie after
-        a successful login. Let's try to mess with it so we can log in as
-        someone else.
-      </p>
-      <p>
-        There's a user <code>bob</code> with a very insecure password
-        <code>baseball</code>
-        Log in as him and see what the cookie looks like.
-      </p>
-      <p>
-        Then try to log in as <code>admin</code>
-      </p>
-      <form method="post" class="form-inline">
-        Username: <input type="text" name="username">
-        Password: <input type="text" name="password">
-        <input type="submit" value="Login">
-      </form>
-      {{else}}
-        <h2>Logged in as: {{user}}</h2>
-        {{#if admin}}
-          <h3><a href="/{{stage3}}">Go to stage 3!</a></h3>
-        {{/if}}
-      {{/unless}}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="page-header">
+      <h1>Stage 2: Insecure cookies</h1>
     </div>
+    {{#unless user}}
+    <p>
+      Congrats! You've completed Stage 1.
+    </p>
+    <p>
+      Now you're ready to log in. This page sets an insecure cookie after
+      a successful login. Let's try to mess with it so we can log in as
+      someone else.
+    </p>
+    <p>
+      There's a user <code>bob</code> with a very insecure password
+      <code>baseball</code>
+      Log in as him and see what the cookie looks like.
+    </p>
+    <p>
+      Then try to log in as <code>admin</code>
+    </p>
+    <form method="post" class="form-inline">
+      Username: <input type="text" name="username">
+      Password: <input type="text" name="password">
+      <input type="submit" value="Login">
+    </form>
+    {{else}}
+      <h2>Logged in as: {{user}}</h2>
+      {{#if admin}}
+        <h3><a href="/{{stage3}}">Go to stage 3!</a></h3>
+      {{/if}}
+    {{/unless}}
   </div>
 </div>
 
