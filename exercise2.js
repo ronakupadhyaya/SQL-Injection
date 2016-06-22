@@ -19,6 +19,16 @@ router.use(session({
     store: new MongoStore({ mongooseConnection: require('mongoose').connection})
 }));
 
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+
+passport.deserializeUser(function(id, done) {
+  models.User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
 passport.use(new LocalStrategy(
   function(username, password, done) {
     models.User.findOne({ username: username }, function (err, user) {
@@ -30,20 +40,61 @@ passport.use(new LocalStrategy(
   }
 ));
 
+router.use(passport.initialize());
+router.use(passport.session());
+
 router.get('/', function(req, res) {
   res.render('stage5', {
-    error: req.query.error
+    error: req.query.error,
+    msg: req.query.msg
   });
 });
+
+router.post('/', passport.authenticate('local', {
+  failureRedirect: '/exercise2?error=' + encodeURIComponent('Login failed. Bad username or password.'),
+  successRedirect: '/exercise2'
+}));
 
 router.get('/signup', function(req, res) {
   res.render('signup');
 });
 
-router.post('/', passport.authenticate('local', {
-  failureRedirect: '/' + getSecret('stage4'),
-  successRedirect: '/exercise2?error=' + encodeURIComponent('Login failed. Bad username or password.')
-}));
+router.post('/signup', function(req, res) {
+  var fields = ['username', 'password', 'passwordRepeat']
+  for (var i = 0; i < fields.length; i++) {
+    var field = fields[i];
+    if (! req.body[field]) {
+      res.status(400).render('signup', {
+        error: field + ' is required.'
+      });
+      return;
+    }
+  }
+  if (req.body.password !== req.body.passwordRepeat) {
+    res.status(400).render('signup', {
+      error: "Passwords don't match."
+    });
+    return;
+  }
+  var user = new models.User({
+    username: req.body.username,
+    password: req.body.password
+  });
+  user.save(function(error) {
+    if (error) {
+      if (error.errmsg.indexOf('E11000') > -1) {
+        error = 'Username is already taken: ' + req.body.username;
+      } else {
+        error = error.errmsg;
+      }
+      res.status(400).render('signup', {
+        error: error
+      })
+    } else {
+      res.redirect('/exercise2?msg=' + encodeURIComponent('User created: ' + req.body.username));
+    }
+  });
+});
 
 
 router.use(function(req, res, next){
