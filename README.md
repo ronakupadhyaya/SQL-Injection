@@ -7,7 +7,9 @@
 
 ## Part 2: Fix
 
-Now that we've learned how to break in, let's fix these security bugs.
+Now that we've learned how to break in, let's fix these security bugs. 
+Clone [this repository](https://github.com/horizons-school-of-technology/steal-this-app) to get
+started.
 
 ### Stage 1: Client-side login
 
