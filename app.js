@@ -56,9 +56,9 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 });
 
 app.post('/' + getSecret('stage3'), function(req, res) {
-  var key = req.body.key;
+  var secret = req.body.secret;
   models.Secret.findOne({
-    key: key
+    secret: secret
   }, function(error, secret) {
     if (error) {
       res.status(400).json({

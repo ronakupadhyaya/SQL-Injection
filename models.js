@@ -15,7 +15,7 @@ module.exports = {
     }
   }),
   Secret: mongoose.model('secret', {
-    key: {
+    secret: {
       type: String,
       required: true
     }

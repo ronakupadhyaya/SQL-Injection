@@ -6,18 +6,18 @@
     <p>
       For stage 3, we provide you an insecure JSON endpoint at
       <code>POST /{{stage3}}</code>.
-      This enpoint takes a JSON object with the property <code>key</code>,
-      and if key matches the key stored in MongoDb it returns the URL
+      This endpoint takes a JSON object with the property <code>secret</code>,
+      and if it matches the secret stored in MongoDb it returns the URL
       for Stage 4. Otherwise it responds with status
       <code>401: Unauthorized</code>.
     </p>
     <p>
       Example query:
-      <pre><code>{"key": "what I think key is"}</code></pre>
+      <pre><code>{"secret": "what I think secret is"}</code></pre>
     </p>
     <p>
       Example response:
-      <pre><code>{"key": "secret key", "Stage 4 URL": "/url"}</code></pre>
+      <pre><code>{"secret": "secret", "Stage 4 URL": "/url"}</code></pre>
       When you get this response open the URL in <code>Stage 4 URL</code>
       to advance to the next stage.
     </p>
@@ -25,12 +25,12 @@
       <h2>How to crack this endpoint</h2>
     </div>
     <p>
-      This endpoint uses <code>Secret.find()</code> to find a record from MongoDb with
-      the matching key.
+      This endpoint uses <code>Secret.find()</code> to find a record from
+      MongoDb with the matching secret.
     </p>
     <script src="https://gist.github.com/moose-horizons/c91e7924a0448bcfb5d5e4f63a681393.js"></script>
     <p>
-      Don't try to guess the key, that's impossible.
+      Don't try to guess the secret, that's impossible.
       You can specify query selectors when doing <code>.find()</code>.
       For example <code>{ "property": { "$ne": "x" }}</code> return all
       records where <code>property</code> does not equal <code>"x"</code>.
@@ -42,7 +42,7 @@
     <button class="btn btn-warn" onclick="$('.hint').show()">Reveal hint</button>
     <p class="hint">
       Make a JSON POST request to <code>/{{stage3}}</code> with
-      a query operator i.e. <code>{"key": {"OPERATOR": "value"}}</code>
+      a query operator i.e. <code>{"secret": {"OPERATOR": "value"}}</code>
       Pick a query operator like <code>$ne</code> that you can easily
       give a value that you know will be false.
     </p>
