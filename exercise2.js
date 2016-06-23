@@ -5,7 +5,7 @@ var models = require('./models');
 var passport = require('./passportInit')(router);
 
 router.get('/', function(req, res) {
-  res.render('stage5', {
+  res.render('login', {
     error: req.query.error,
     msg: req.query.msg
   });

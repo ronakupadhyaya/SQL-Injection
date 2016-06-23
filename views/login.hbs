@@ -1,16 +1,40 @@
-<h1>Secure login page (for real this time?)</h1>
-
-{{#if user}}
-<h2>You are logged in as {{user}}</h2>
-
-<form method="post" action="/logout">
-  <input type="submit" value="Logout">
-</form>
-{{else}}
-<h2>You are not logged in<h2>
-<form method="post">
-  Username: <input type="text" name="username">
-  Password: <input type="password" name="password">
-  <input type="submit" value="Login">
-</form>
-{{/if}}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="page-header">
+      <h1>Exercise 2: Insecure Messenger Login</h1>
+    </div>
+    <p>
+      Before you start Exercise 2 make sure you complete
+      <a href="/">Exercise 1</a> first.
+    </p>
+    <p>
+      <ol>
+        <li>
+          <a href="/exercise2/signup">Create a user account for yourself</a>
+        </li>
+        <li>
+          Login &darr;
+        </li>
+      </ol>
+    </p>
+    <form method="post">
+      {{#if msg}}
+      <div class="alert alert-success">
+        {{msg}}
+      </div>
+      {{/if}}
+      {{#if error}}
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{error}}
+      </div>
+      {{/if}}
+      <div class="form-group">
+        <input name="username" type="text" class="form-control" placeholder="Username" required>
+      </div>
+      <div class="form-group">
+        <input name="password" type="password" class="form-control" placeholder="Password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+</div>

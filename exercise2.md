@@ -10,7 +10,7 @@
 Insecure messenger lets you send messages to other users on Steal This App.
 Unfortunately, it is vulnerable to Cross-Site Scripting (XSS) attacks.
 
-### a. Sending on someone's behalf
+### a. Running JavaScript as someone else
 
 The message body is not sanitized (i.e. escaped) before being rendered to the
 page.
@@ -47,7 +47,7 @@ their knowledge.
 1. Send a specially crafted message from `User B` to `User A` and make sure
   that you can use the same attack across users.
 
-### b. Drive by: sending on someone's behalf
+### b. Drive by: running JavaScript as someone else
 
 There's another thing that's vulnerable on this page: the `success` query
 parameter.
@@ -88,24 +88,115 @@ steal their cookie!
 
 ## Part 2: Fix XSS vulnerabilities
 
-TODO
+Clone the `steal-this-app` GitHub repo. The vulnerabilities are in
+`steal-this-app/views/messenger.hbs`
 
-```
-{{{insecure}}}
-```
+Replace triple-brace Handlebars references with secure double-brace
+Handlebars references.
+
+After fixing attempt the XSS attacks you did earlier to verify they
+no longer work!
+
+This is secure:
 
 ```
 {{secure}}
 ```
 
+This is insecure:
+
+```
+{{{insecure}}}
+```
+
 ## Part 3: Insecure Messenger Cross-site Request Forgery (CSRF)
+
+Insecure Messenger is vulnerable to another type of attack called
+Cross-site request forgery aka CSRF.
+
+This type of attack does not involve running JavaScript in the target
+site but instead relies on making requests on behalf of the user while
+they are on a 3rd party site.
 
 ### a. Logout your enemies
 
+In this exercise we're going to log someone out of a from Insecure Messenger
+without their knowledge. We're going to do this using a hidden `img` that
+will make a `GET` request to a destination of the attacker's choosing.
+
+1. Log in to [Insecure Messenger](http://steal-this-app-horizons.herokuapp.com/exercise2)
+1. Clone the [Attacker companion to Steal This App](https://github.com/horizons-school-of-technology/attacker-steal-this-app)
+1. Start the Attacker app and connect to [http://localhost:3000/](http://localhost:3000/) make sure it's running.
+1. Create a new route `GET /csrfLogout` that renders a single `img` tag
+  that points to the logout page:
+
+  ```html
+  <img style="display: none" src="https://steal-this-app-horizons.herokuapp.com/exercise2/logout">
+  ```
+
+1. Visit your new endpoint.
+1. Go back to [Insecure Messenger](http://steal-this-app-horizons.herokuapp.com/exercise2) Are you still logged in?
+
 ### (Bonus) b. More ways to send messages
+
+OK, we made someone log out without telling them. What's the big deal?
+Well let's now take this to the next level by making a `POST`
+request without their knowledge as well.
+
+This time we're going to make them send message, just like we did earlier
+but without relying on XSS.
+
+```html
+<iframe style="display: none" name="target-iframe"></iframe>
+
+<form id="target-form" target="target-iframe" action="http://steal-this-app-horizons.herokuapp.com/exercise2/messenger" method="post" style="display: none">
+  <input type="hidden" name="to" value="PERSON TO SEND MESSAGE TO">
+  <input type="hidden" name="body" value="My account has been hacked">
+</form>
+
+<script>
+  $('#target-form').submit();
+</script>
+```
 
 ### (Bonus) Fix CSRF vulnerabilities
 
+To fix CSRF we need to add a second layer of protection to endpoints
+that perform actions i.e. `POST` endpoints.
+
+We will use the NPM package `csurf` to accomplish this.
+
+1. Add `csurf` to your `app.js`
+
+  ```javascript
+  var csrf = require('csurf')();
+  app.use(csrf);
+  ```
+
+1. Now all your `GET` requests will contain a new property `req.csrfToken()`
+  which you can render as a hidden form field.
+
+  **Route**
+
+  ```javascript
+  app.use('/route', function(req, res) {
+    res.render('template', {
+      _csrf: req.csrfToken()
+    });
+  });
+  ```
+
+  **Template**
+
+  ```html
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  </form>
+  ```
+
+1. `POST` requests without a valid token in the `_csrf` field will now be
+  automatically rejected.
+
 ## Done!
 
-Congrats! You're done with Exercise 2.
+Wow! You completed everything! That was amazing! 🔥🎉✅
