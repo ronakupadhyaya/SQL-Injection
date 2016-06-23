@@ -1,5 +1,6 @@
 "use strict";
 
+
 var morgan = require('morgan');
 var path = require('path');
 var express = require('express');
@@ -10,9 +11,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 
+// cookie dependencies & use
+var cookieSession = require('cookie-session');
+app.use(cookieSession({keys: ['secret']}));
+
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
-  return process.env[key] || key;
+  return 'process.env[key] || key';
 }
 
 
@@ -31,10 +36,16 @@ app.get('/', function(req, res) {
   });
 });
 
+app.post('/', function(req, res){
+  if(req.body.password === 'gingerbread'){
+    res.redirect('/stage2');
+  }
+});
+
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.user,
+    admin: req.session.user === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -42,9 +53,16 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.user = req.body.username;
     res.redirect('/' + getSecret('stage2'));
-  } else {
+  }
+
+  else if (req.body.username === 'admin' && req.body.password === 'baseball') {
+    req.session.user = req.body.username;
+    res.redirect('/' + getSecret('stage2'));
+  } 
+
+  else {
     res.sendStatus(401);
   }
 });
