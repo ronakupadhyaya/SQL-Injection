@@ -144,7 +144,7 @@ they are on a 3rd party site.
 
 ### a. Logout your enemies
 
-In this exercise we're going to log someone out of a from Insecure Messenger
+In this exercise we're going to log someone out of Insecure Messenger
 without their knowledge. We're going to do this using a hidden `img` that
 will make a `GET` request to a destination of the attacker's choosing.
 
