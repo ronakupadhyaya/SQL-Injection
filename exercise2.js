@@ -11,13 +11,6 @@ router.get('/', function(req, res) {
   });
 });
 
-router.post('/stage1', function(req,res){
-  if(req.body.password==='gingerbread'){
-    res.redirect('/stage2')
-  }
-  res.redirect('/stage1')
-})
-
 router.post('/', passport.authenticate('local', {
   failureRedirect: '/exercise2?error=' + encodeURIComponent('Login failed. Bad username or password.'),
   successRedirect: '/exercise2/messenger'
@@ -63,7 +56,6 @@ router.post('/signup', function(req, res) {
     }
   });
 });
-
 
 router.get('/logout', function(req, res) {
   req.logout();

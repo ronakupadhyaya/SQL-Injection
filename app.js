@@ -31,6 +31,13 @@ app.get('/', function(req, res) {
   });
 });
 
+app.post('/', function(req,res){
+  if(req.body.password==="gingerbread"){
+    res.redirect('/stage2')
+  }
+  res.redirect('/stage1')
+})
+
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
     user: req.cookies.user,
