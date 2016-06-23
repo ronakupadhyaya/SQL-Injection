@@ -129,15 +129,12 @@ will make a `GET` request to a destination of the attacker's choosing.
 1. Start the Attacker app and connect to [http://localhost:3000/](http://localhost:3000/) make sure it's running.
 1. Create a new route `GET /csrfLogout` that renders a single `img` tag
   that points to the logout page:
-
-  ```html
-  <img style="display: none" src="https://steal-this-app-horizons.herokuapp.com/exercise2/logout">
-  ```
+  ![](img/csrf1.png)
 
 1. Visit your new endpoint.
 1. Go back to [Insecure Messenger](http://steal-this-app-horizons.herokuapp.com/exercise2) Are you still logged in?
 
-### (Bonus) b. More ways to send messages
+### (Bonus) b. Send POST request with CSRF
 
 OK, we made someone log out without telling them. What's the big deal?
 Well let's now take this to the next level by making a `POST`
@@ -146,18 +143,19 @@ request without their knowledge as well.
 This time we're going to make them send message, just like we did earlier
 but without relying on XSS.
 
-```html
-<iframe style="display: none" name="target-iframe"></iframe>
+We need a new page on the Attacker side that contains a hidden form.
 
-<form id="target-form" target="target-iframe" action="http://steal-this-app-horizons.herokuapp.com/exercise2/messenger" method="post" style="display: none">
-  <input type="hidden" name="to" value="PERSON TO SEND MESSAGE TO">
-  <input type="hidden" name="body" value="My account has been hacked">
-</form>
+We are going make this form talk to
+`http://steal-this-app-horizons.herokuapp.com/exercise2/messenger`
+by using the `action` attribute and use a `POST` request with the
+`method` attribute. It should look like this:
 
-<script>
-  $('#target-form').submit();
-</script>
-```
+![](img/csrf2.png)
+
+Once you get your form working, you can pull up the inbox of the
+user that you sent a message to and verify that your attack succeeded.
+
+![](img/csrf3.png)
 
 ### (Bonus) Fix CSRF vulnerabilities
 
