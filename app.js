@@ -9,6 +9,8 @@ var models = require('./models');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var cookieSession = require('cookie-session');
+app.use(cookieSession({keys: ['my secret key for cookies']}));
 
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
@@ -33,16 +35,25 @@ app.get('/', function(req, res) {
 
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.user,
+    admin: req.session.user === 'admin',
     stage3: getSecret('stage3')
   });
+});
+
+app.post('/', function(req, res){
+    console.log(req.body.password);
+  if(req.body.password === 'gingerbread'){
+    res.redirect('/' + getSecret('stage2'));
+  } else{
+    res.redirect('/');
+  }
 });
 
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.user = 'bob';
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -60,7 +71,7 @@ app.post('/' + getSecret('stage3'), function(req, res) {
   models.Secret.findOne({
     secret: secret
   }, function(error, secret) {
-    if (error) {
+    if (error || !(typeof(secret) === "string")) {
       res.status(400).json({
         error: error
       });
