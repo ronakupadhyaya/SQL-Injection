@@ -3,24 +3,36 @@
 var morgan = require('morgan');
 var path = require('path');
 var express = require('express');
-var exphbs  = require('express-handlebars');
+var exphbs = require('express-handlebars');
 var models = require('./models');
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 
+var cookieSession = require('cookie-session');
+app.use(cookieSession({
+  keys: 'my secret key for cookies'
+}));
+
+var csrf = require('csurf')();
+app.use(csrf);
+
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
   return process.env[key] || key;
 }
 
-
-app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
+app.engine('hbs', exphbs({
+  extname: 'hbs',
+  defaultLayout: 'main'
+}));
 app.set('view engine', 'hbs');
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
@@ -31,10 +43,18 @@ app.get('/', function(req, res) {
   });
 });
 
+app.post('/', function(req, res) {
+  if (req.body.password == 'gingerbread') {
+    res.redirect('/' + getSecret('stage2'));
+  } else {
+    res.redirect('/');
+  }
+});
+
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
     user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    admin: req.session.secureCookie === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -43,6 +63,7 @@ app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
     res.cookie('user', 'bob');
+    req.session.secureCookie = req.body.username;
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -50,13 +71,16 @@ app.post('/' + getSecret('stage2'), function(req, res) {
 });
 
 app.get('/' + getSecret('stage3'), function(req, res) {
-  res.render('stage3',{
+  res.render('stage3', {
     stage3: getSecret('stage3')
   });
 });
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
+  if (typeof req.body.secret !== 'string') {
+    res.status(400).send('Secret is not a string');
+  }
   models.Secret.findOne({
     secret: secret
   }, function(error, secret) {

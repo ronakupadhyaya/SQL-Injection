@@ -1,7 +1,7 @@
 "use strict";
 
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || require('./connect'));
+mongoose.connect('mongodb://lemonz:19951213@ds059125.mlab.com:59125/horizons');
 
 module.exports = {
   User: mongoose.model('user', {

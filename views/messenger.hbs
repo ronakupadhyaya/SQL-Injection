@@ -4,8 +4,7 @@
       <h1>Exercise 2: Insecure messenger</h1>
     </div>
     <p>
-      This is a very simple app that lets you send messages between different
-      users on this site.
+      This is a very simple app that lets you send messages between different users on this site.
     </p>
     <p>
       <h2><a href="https://github.com/horizons-school-of-technology/steal-this-app/blob/master/exercise2.md#part-1-hack">Instructions on GitHub</a></h2>
@@ -15,9 +14,10 @@
       <h2>Horizons Messenger</h2>
     </div>
     <form method="post">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
       {{#if success}}
         <div class="alert alert-success">
-          {{{success}}}
+          {{success}}
         </div>
       {{/if}}
       {{#if error}}
@@ -41,14 +41,14 @@
       </div>
 
       {{#each messages}}
-      <div class="well">
-        <form action="/exercise2/delete/{{_id}}" method="post" class="form-inline">
-          <button class="btn btn-danger pull-right">Delete</button>
-        </form>
-        <p><strong>From</strong> {{from.username}}</p>
-        <p><strong>To</strong> {{../user.username}}</p>
-        <p><strong>Message</strong> {{{body}}}</p>
-      </div>
+        <div class="well">
+          <form action="/exercise2/delete/{{_id}}" method="post" class="form-inline">
+            <button class="btn btn-danger pull-right">Delete</button>
+          </form>
+          <p><strong>From</strong> {{from.username}}</p>
+          <p><strong>To</strong> {{../user.username}}</p>
+          <p><strong>Message</strong> {{body}}</p>
+        </div>
       {{/each}}
     {{/unless}}
     <!-- MESSENGER END -->

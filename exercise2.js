@@ -3,6 +3,10 @@
 var router = require('express').Router();
 var models = require('./models');
 var passport = require('./passportInit')(router);
+var express = require('express');
+var app = express();
+var csrf = require('csurf')();
+app.use(csrf);
 
 router.get('/', function(req, res) {
   res.render('login', {
@@ -85,7 +89,8 @@ router.get('/messenger', function(req, res) {
       res.render('messenger', {
         user: req.user,
         messages: messages,
-              success: req.query.success
+        success: req.query.success,
+        _csrf: req.csrfToken(),
       });
     }
   });
