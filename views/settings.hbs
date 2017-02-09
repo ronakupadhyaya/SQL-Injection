@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="page-header">
+      <h1>Exercise 2: Insecure Messenger Settings</h1>
+    </div>
+    {{#if msg}}
+    <div class="alert alert-success">
+      {{msg}}
+    </div>
+    {{/if}}
+    {{#if error}}
+    <div class="alert alert-danger">
+      <strong>Error:</strong> {{error}}
+    </div>
+    {{/if}}
+    {{#if user.safe}}
+      <form action="/exercise2/settings/unsafe" method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button type="submit" class="btn btn-danger">Turn off safe mode</button>
+      </form>
+    {{else}}
+      <form action="/exercise2/settings/safe" method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button type="submit" class="btn btn-success">Turn on safe mode</button>
+      </form>
+    {{/if}}
+    <br>
+    <form action="/exercise2/settings/deleteAll" method="post">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <button type="submit" class="btn btn-danger">⚠️Delete all messages⚠️</button>
+    </form>
+  </div>
+</div>

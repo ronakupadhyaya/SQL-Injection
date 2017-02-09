@@ -1,11 +1,13 @@
 "use strict";
 
+var csrf = require('csurf')();
 var router = require('express').Router();
 var models = require('./models');
 var passport = require('./passportInit')(router);
 
 router.get('/', function(req, res) {
   res.render('login', {
+    user: req.user,
     error: req.query.error,
     msg: req.query.msg
   });
@@ -17,7 +19,9 @@ router.post('/', passport.authenticate('local', {
 }));
 
 router.get('/signup', function(req, res) {
-  res.render('signup');
+  res.render('signup', {
+    user: req.user
+  });
 });
 
 router.post('/signup', function(req, res) {
@@ -85,7 +89,7 @@ router.get('/messenger', function(req, res) {
       res.render('messenger', {
         user: req.user,
         messages: messages,
-              success: req.query.success
+        success: req.query.success
       });
     }
   });
@@ -135,6 +139,47 @@ router.post('/messenger', function(req, res) {
       }
     });
   }
+});
+
+router.get('/settings', csrf, function(req, res) {
+  res.render('settings', {
+    user: req.user,
+    error: req.query.error,
+    msg: req.query.success,
+    csrfToken: req.csrfToken()
+  });
+});
+
+router.post('/settings/safe', csrf, function(req, res) {
+  req.user.safe = true;
+  req.user.save(function(err) {
+    if (err) {
+      res.redirect('/exercise2/settings?error=' + encodeURIComponent(err.errmsg));
+    } else {
+      res.redirect('/exercise2/settings?success=' + encodeURIComponent('Safe mode on!'));
+    }
+  });
+});
+
+router.post('/settings/unsafe', csrf, function(req, res) {
+  req.user.safe = false;
+  req.user.save(function(err) {
+    if (err) {
+      res.redirect('/exercise2/settings?error=' + encodeURIComponent(err.errmsg));
+    } else {
+      res.redirect('/exercise2/settings?success=' + encodeURIComponent('Safe mode off!'));
+    }
+  });
+});
+
+router.post('/settings/deleteAll', csrf, function(req, res) {
+  models.Message.remove({}, function(err) {
+    if (err) {
+      res.redirect('/exercise2/settings?error=' + encodeURIComponent(err.errmsg));
+    } else {
+      res.redirect('/exercise2/settings?success=' + encodeURIComponent('Deleted all messages'));
+    }
+  });
 });
 
 router.post('/delete/:messageId', function(req, res) {

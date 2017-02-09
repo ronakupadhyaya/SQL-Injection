@@ -12,6 +12,10 @@ module.exports = {
     password: {
       type: String,
       required: true
+    },
+    safe: {
+      type: Boolean,
+      default: false
     }
   }),
   Secret: mongoose.model('secret', {
