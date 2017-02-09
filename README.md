@@ -37,7 +37,7 @@ app.get('/setCookie', function(req, res){
 });
 
 app.get('/checkCookie', function(req, res){
-  if (req.session.secureCookie === 'expected value') {
+  if (req.session.secureCookie === 'cookie value') {
     res.send('Good!');
   } else {
     res.status(400).send('Bad!');
