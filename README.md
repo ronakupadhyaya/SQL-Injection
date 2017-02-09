@@ -24,14 +24,8 @@ Let's replace client-side validation with a server-side validation.
 
 We will use the Express library `cookie-session` to create cookies
 that cannot be tampered with. This uses cryptography to detect unauthorized
-changes.
-
-Set up:
-
-```javascript
-var cookieSession = require('cookie-session');
-app.use(cookieSession({keys: 'my secret key for cookies'}));
-```
+changes. Install `cookie-session` via NPM and add it to your app as with
+a middleware function.
 
 Now you can use `req.session` to store secure cookies. This works just
 like `req.cookie`:
