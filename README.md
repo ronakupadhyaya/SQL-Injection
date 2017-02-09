@@ -31,12 +31,12 @@ Now you can use `req.session` to store secure cookies. This works just
 like `req.cookie`:
 
 ```javascript
-app.get('/setCookie', {
+app.get('/setCookie', function(req, res){
   req.session.secureCookie = 'cookie value';
   res.send('Done!')
 });
 
-app.get('/checkCookie', {
+app.get('/checkCookie', function(req, res){
   if (req.session.secureCookie === 'expected value') {
     res.send('Good!');
   } else {
