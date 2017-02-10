@@ -5,6 +5,7 @@ var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var models = require('./models');
+var session = require('cookie-session')
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -15,6 +16,11 @@ function getSecret(key) {
   return process.env[key] || key;
 }
 
+//cookie session
+app.use(session({
+  httpOnly: false,
+  keys:["Secreetttt"]
+}))
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
@@ -33,8 +39,8 @@ app.get('/', function(req, res) {
 
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.user,
+    admin: req.session.user === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -42,7 +48,7 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session = {user:"bob"};
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -57,6 +63,10 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
+  if (typeof secret !== String) {
+    console.log("not a string");
+    res.sendStatus(400);
+  }
   models.Secret.findOne({
     secret: secret
   }, function(error, secret) {
@@ -82,5 +92,22 @@ app.get('/' + getSecret('stage4'), function(req, res) {
 });
 
 app.use('/exercise2', require('./exercise2'));
+
+
+
+
+//stage1
+app.post('/', function(req, res) {
+  if (req.body.password !== 'gingerbread') {
+    res.redirect('/stage1');
+    e.preventDefault();
+  } else {
+    res.redirect('/stage2');
+  }
+})
+
+
+
+
 
 app.listen(process.env.PORT || 3000);
