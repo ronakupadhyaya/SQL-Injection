@@ -25,16 +25,52 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
 
+// add cookie-session
+var session = require('cookie-session');
+
+app.use(session({
+  name: 'session',
+  keys: ['some private key'],
+}));
+
+// app.get('/setCookie', function(req, res){
+//   console.log("HI DUDE");
+//   req.session.secureCookie = 'cookie value';
+//   res.send('Done!')
+// });
+//
+// app.get('/checkCookie', function(req, res){
+//   if (req.session.secureCookie === 'cookie value') {
+//     res.send('Good!');
+//   } else {
+//     res.status(400).send('Bad!');
+//   }
+// });
+
+
 app.get('/', function(req, res) {
   res.render('stage1', {
     stage2: getSecret('stage2')
   });
 });
 
+// part 2, stage 1
+app.post('/', function(req, res){
+  var password = req.body.password;
+  console.log("PASSWORD IS", password);
+  if(password === 'gingerbread'){
+    res.redirect('/'+getSecret('stage2'));
+  }else{
+    res.redirect('/');
+  }
+});
+
+
 app.get('/' + getSecret('stage2'), function(req, res) {
+
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.secureUser,
+    admin: req.session.secureUser === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -42,7 +78,7 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.secureUser = req.body.username;
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -57,6 +93,10 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
+  if(typeof req.body.secret !== 'string'){
+    res.status(400).send("SORRY YOU ARE A BAD HACKER SPIKE LU");
+    return;
+  }
   models.Secret.findOne({
     secret: secret
   }, function(error, secret) {
