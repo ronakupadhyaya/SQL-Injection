@@ -5,6 +5,7 @@ var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var models = require('./models');
+var cookieSession = require('cookie-session')
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
+
 
 app.get('/', function(req, res) {
   res.render('stage1', {
@@ -57,28 +59,61 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
-  models.Secret.findOne({
-    secret: secret
-  }, function(error, secret) {
-    if (error) {
-      res.status(400).json({
-        error: error
-      });
-    } else if (!secret) {
-      res.status(401).json({
-        error: "Incorrect key"
-      });
-    } else {
-      secret.stage4url = "/" + getSecret('stage4');
-      res.json({
-        secret: secret
-      });
-    }
-  });
+  if(typeof secret!== 'string'){
+    res.status(401).send("stop it!")
+    console.log("They coming for us!!!!!!!!");
+  } else {
+    models.Secret.findOne({
+      secret: secret
+    }, function(error, secret) {
+      console.log(secret);
+      if (error) {
+        res.status(400).json({
+          error: error
+        });
+      } else if (!secret) {
+        res.status(401).json({
+          error: "Incorrect key"
+        });
+      } else {
+        secret.stage4url = "/" + getSecret('stage4');
+        res.json({
+          secret: secret
+        });
+      }
+    });
+  }
 });
 
 app.get('/' + getSecret('stage4'), function(req, res) {
   res.render('stage4');
+});
+
+app.post('/', function(req, res){
+  if (req.body.password==='gingerbread') {
+    res.redirect('/stage2')
+  } else {
+    res.redirect('/stage1')
+  }
+});
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ['a very secure cookie lmaooo'],
+  maxAge: 24 * 60 * 60 * 1000
+}))
+
+app.get('/setCookie', function(req, res){
+  req.session.secureCookie = 'a very secure cookie lmaooo';
+  res.send('Done!')
+});
+
+app.get('/checkCookie', function(req, res){
+  if (req.session.secureCookie === 'a very secure cookie lmaooo') {
+    res.send('Good!');
+  } else {
+    res.status(400).send('Bad!');
+  }
 });
 
 app.use('/exercise2', require('./exercise2'));
