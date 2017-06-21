@@ -85,6 +85,21 @@ steal their cookie!
 ```
 
 1. Clone the [Attacker companion to Steal This App](https://github.com/horizons-school-of-technology/attacker-steal-this-app)
+
+    Make sure you are in your `horizons` folder:
+
+    ```bash
+    pwd
+    ```
+
+    Clone our new repository for `Attacker companion to Steal This App` and create your own branch:
+
+    ```bash
+    git clone git@github.com:horizons-school-of-technology/attacker-steal-this-app.git
+    cd attacker-steal-this-app
+    git checkout -b YOUR GIT USERNAME
+    ```
+
 1. Start this app on your localhost and visit [http://localhost:3000/cookieCatcher](http://localhost:3000/cookieCatcher), you should see a message in your console
 
     ```
@@ -111,7 +126,7 @@ steal their cookie!
 
 ## Part 2: Fix XSS vulnerabilities
 
-Clone the `steal-this-app` GitHub repo. The vulnerabilities are in
+Clone the `steal-this-app` GitHub repo (if you have not done so yet). The vulnerabilities are in
 `steal-this-app/views/messenger.hbs`
 
 Replace triple-brace Handlebars references with secure double-brace
@@ -148,7 +163,7 @@ without their knowledge. We're going to do this using a hidden `img` that
 will make a `GET` request to a destination of the attacker's choosing.
 
 1. Log in to [Insecure Messenger](http://steal-this-app-horizons.herokuapp.com/exercise2)
-1. Clone the [Attacker companion to Steal This App](https://github.com/horizons-school-of-technology/attacker-steal-this-app)
+1. Clone the [Attacker companion to Steal This App](https://github.com/horizons-school-of-technology/attacker-steal-this-app), if you have not done so yet.
 1. Start the Attacker app and connect to [http://localhost:3000/](http://localhost:3000/) make sure it's running.
 1. Create a new route `GET /csrfLogout` that renders a single `img` tag
   that points to the logout page:
