@@ -103,6 +103,7 @@ router.post('/messenger', function(req, res) {
       error: "To field is required."
     });
   } else {
+    
     models.User.findOne({
       username: req.body.to
     }, function(err, toUser) {

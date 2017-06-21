@@ -13,11 +13,12 @@
     <!-- MESSENGER BEGIN -->
     <div class="page-header">
       <h2>Horizons Messenger</h2>
+
     </div>
     <form method="post">
       {{#if success}}
         <div class="alert alert-success">
-          {{{success}}}
+          {{success}}
         </div>
       {{/if}}
       {{#if error}}
@@ -31,6 +32,7 @@
       </div>
       <div class="form-group">
         <textarea name="body" class="form-control" rows="4" style="width: 100%" placeholder="Message" required></textarea>
+
       </div>
       <button type="submit" class="btn btn-default">Send</button>
     </form>
@@ -47,10 +49,25 @@
         </form>
         <p><strong>From</strong> {{from.username}}</p>
         <p><strong>To</strong> {{../user.username}}</p>
-        <p><strong>Message</strong> {{{body}}}</p>
+        <p><strong>Message</strong> {{body}}</p>
       </div>
       {{/each}}
     {{/unless}}
     <!-- MESSENGER END -->
   </div>
 </div>
+
+<!-- <script>
+  $.ajax('/exercise2/messenger', {
+    method: 'post',
+    data: {
+        "to": "wonderwoman",
+        "from": "wonderwoman",
+        "body": "HELLO HEELO"
+    }
+  })
+</script> -->
+
+<!-->
+<a onClick="console.log('hello superman')">This will print hello</a>
+</-->

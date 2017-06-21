@@ -5,6 +5,7 @@ var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var models = require('./models');
+var secureCookie = require('cookie-session');
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -25,11 +26,37 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
 
+app.use(secureCookie ({
+  name: 'session',
+  keys: ['my secret key']
+}))
+app.get('/setCookie', function(req, res){
+  req.session.secureCookie = 'bob';
+  res.send('Done!')
+});
+
+app.get('/checkCookie', function(req, res){
+  if (req.session.secureCookie === 'bob') {
+    res.send('Good!');
+  } else {
+    res.status(400).send('Bad!');
+  }
+});
+
 app.get('/', function(req, res) {
   res.render('stage1', {
     stage2: getSecret('stage2')
   });
 });
+app.post('/', function(req,res){
+  console.log("dd" + req.body.password);
+  if(req.body.password === 'gingerbread') {
+    console.log("dd" + req.body.password)
+    res.redirect('/' + getSecret('stage2'))
+  } else {
+    res.redirect('/')
+  }
+})
 
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
@@ -57,24 +84,33 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
-  models.Secret.findOne({
-    secret: secret
-  }, function(error, secret) {
-    if (error) {
-      res.status(400).json({
-        error: error
-      });
-    } else if (!secret) {
-      res.status(401).json({
-        error: "Incorrect key"
-      });
-    } else {
-      secret.stage4url = "/" + getSecret('stage4');
-      res.json({
-        secret: secret
-      });
-    }
-  });
+  // console.log( secret);
+  if(typeof secret !== 'string') {
+    res.status(400).json({
+      error: "BAD USER ERROR"
+    });
+  } else {
+    models.Secret.find({
+      // secret: secret
+    }, function(error, secret) {
+      console.log('secret :' + secret)
+      if (error) {
+        res.status(400).json({
+          error: error
+        });
+      } else if (!secret) {
+        res.status(401).json({
+          error: "Incorrect key"
+        });
+      } else {
+        secret.stage4url = "/" + getSecret('stage4');
+        res.json({
+          secret: secret
+        });
+      }
+    });
+  }
+
 });
 
 app.get('/' + getSecret('stage4'), function(req, res) {
