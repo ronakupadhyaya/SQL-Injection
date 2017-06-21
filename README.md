@@ -11,6 +11,20 @@ Now that we've learned how to break in, let's fix these security bugs.
 Clone [this repository](https://github.com/horizons-school-of-technology/steal-this-app) to get
 started.
 
+Make sure you are in your `horizons` folder:
+
+```bash
+pwd
+```
+
+Clone this repository and create your own branch:
+
+```bash
+git clone git@github.com:horizons-school-of-technology/steal-this-app.git
+cd steal-this-app
+git checkout -b YOUR GIT USERNAME
+```
+
 ### Stage 1: Client-side login
 
 Let's replace client-side validation with a server-side validation.
