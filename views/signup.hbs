@@ -4,6 +4,7 @@
       <h1>Exercise 2: Signup</h1>
     </div>
     <form method="post">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
       {{#if error}}
       <div class="alert alert-danger">
         <strong>Error:</strong> {{error}}

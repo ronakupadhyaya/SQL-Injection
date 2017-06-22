@@ -10,11 +10,18 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 
+var csrf = require('csurf');
+//var csrfProtection = csrf({ cookie: true })
+//app.use(csrf());
+
+var cookieSession = require('cookie-session')
+app.use(cookieSession({
+  keys: ['whales whales whales'],
+}))
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
   return process.env[key] || key;
 }
-
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
@@ -27,22 +34,34 @@ app.use(morgan('combined'));
 
 app.get('/', function(req, res) {
   res.render('stage1', {
+    _csrf: req.csrfToken(),
     stage2: getSecret('stage2')
   });
 });
 
+app.post('/', function(req, res) {
+  if (req.body.password === 'gingerbread') {
+    console.log(req.body.password)
+    res.redirect('/' + getSecret('stage2'))
+  }
+  else {
+    res.redirect('/')
+  }
+})
+
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
-    stage3: getSecret('stage3')
+    user: req.session.user,
+    admin: req.session.user === 'admin',
+    stage3: getSecret('stage3'),
+    _csrf: req.csrfToken()
   });
 });
 
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.user = 'bob';
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -51,36 +70,39 @@ app.post('/' + getSecret('stage2'), function(req, res) {
 
 app.get('/' + getSecret('stage3'), function(req, res) {
   res.render('stage3',{
-    stage3: getSecret('stage3')
+    stage3: getSecret('stage3'),
+    _csrf: req.csrfToken()
   });
 });
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
-  models.Secret.findOne({
-    secret: secret
-  }, function(error, secret) {
-    if (error) {
-      res.status(400).json({
-        error: error
-      });
-    } else if (!secret) {
-      res.status(401).json({
-        error: "Incorrect key"
-      });
-    } else {
-      secret.stage4url = "/" + getSecret('stage4');
-      res.json({
-        secret: secret
-      });
-    }
-  });
+  if (typeof secret === "string") {
+    throw new Error("Secret is not a string")
+    models.Secret.findOne({
+      secret: secret
+    }, function(error, secret) {
+      if (error) {
+        res.status(400).json({
+          error: error
+        });
+      } else if (!secret) {
+        res.status(401).json({
+          error: "Incorrect key"
+        });
+      } else {
+        secret.stage4url = "/" + getSecret('stage4');
+        res.json({
+          secret: secret
+        });
+      }
+    });
+  }
 });
 
 app.get('/' + getSecret('stage4'), function(req, res) {
   res.render('stage4');
 });
-
 app.use('/exercise2', require('./exercise2'));
 
 app.listen(process.env.PORT || 3000);

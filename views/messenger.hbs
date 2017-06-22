@@ -15,9 +15,10 @@
       <h2>Horizons Messenger</h2>
     </div>
     <form method="post">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
       {{#if success}}
         <div class="alert alert-success">
-          {{{success}}}
+          {{success}}
         </div>
       {{/if}}
       {{#if error}}
@@ -47,7 +48,7 @@
         </form>
         <p><strong>From</strong> {{from.username}}</p>
         <p><strong>To</strong> {{../user.username}}</p>
-        <p><strong>Message</strong> {{{body}}}</p>
+        <p><strong>Message</strong> {{body}}</p>
       </div>
       {{/each}}
     {{/unless}}
