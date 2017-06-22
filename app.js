@@ -5,6 +5,7 @@ var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var models = require('./models');
+var cookieSession=require('cookie-session');
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -18,7 +19,9 @@ function getSecret(key) {
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
-
+app.use(cookieSession({
+  keys:['Hacker']
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -33,8 +36,8 @@ app.get('/', function(req, res) {
 
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.user,
+    admin: req.session.user === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -42,12 +45,21 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.user='bob'
+    // res.cookie('user', 'bob');
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
   }
 });
+
+app.post('/',function(req,res){
+  if(req.body.password==="gingerbread"){
+    res.redirect('/'+getSecret('stage2'))
+  }else{
+    res.redirect('/')
+  }
+})
 
 app.get('/' + getSecret('stage3'), function(req, res) {
   res.render('stage3',{
@@ -57,6 +69,8 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
+  if(typeof secret==="string"){
+
   models.Secret.findOne({
     secret: secret
   }, function(error, secret) {
@@ -75,7 +89,12 @@ app.post('/' + getSecret('stage3'), function(req, res) {
       });
     }
   });
+}else{
+  res.status(400).json(new Error('Wrong Secret'))
+
+}
 });
+
 
 app.get('/' + getSecret('stage4'), function(req, res) {
   res.render('stage4');
