@@ -1,7 +1,7 @@
 "use strict";
 
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || require('./connect'));
+mongoose.connect(process.env.MONGODB_URI);
 
 module.exports = {
   User: mongoose.model('user', {

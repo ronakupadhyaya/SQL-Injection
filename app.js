@@ -8,7 +8,9 @@ var models = require('./models');
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var cookieSession = require('cookie-session');
 var app = express();
+
 
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
@@ -31,10 +33,16 @@ app.get('/', function(req, res) {
   });
 });
 
+app.use(cookieSession({
+  name: 'session',
+  keys: ["secret key here"]
+}));
+
 app.get('/' + getSecret('stage2'), function(req, res) {
-  res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    // req.session.visted = 1 + parseInt(req.session.visited || 0)
+    res.render('stage2', {
+    user: req.session.user,
+    admin: req.session.user === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -42,7 +50,8 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    // res.cookie('user', 'bob');
+    req.session.user = 'bob'
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -57,6 +66,12 @@ app.get('/' + getSecret('stage3'), function(req, res) {
 
 app.post('/' + getSecret('stage3'), function(req, res) {
   var secret = req.body.secret;
+  if (typeof secret !== "string") {
+    res.status(400).json({
+      error: "please enter a string"
+    })
+    return
+  }
   models.Secret.findOne({
     secret: secret
   }, function(error, secret) {
@@ -75,6 +90,27 @@ app.post('/' + getSecret('stage3'), function(req, res) {
       });
     }
   });
+});
+
+app.get('/setCookie', function(req, res){
+  req.session.secureCookie = 'cookie value';
+  res.send('Done!')
+});
+
+app.get('/checkCookie', function(req, res){
+  if (req.session.secureCookie === 'cookie value') {
+    res.send('Good!');
+  } else {
+    res.status(400).send('Bad!');
+  }
+});
+
+app.post('/', function(req, res) {
+  if(req.body.password !== "gingerbread") {
+    res.redirect('/')
+  } else {
+    res.redirect('/stage2')
+  }
 });
 
 app.get('/' + getSecret('stage4'), function(req, res) {
