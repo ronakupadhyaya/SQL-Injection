@@ -9,6 +9,7 @@ var models = require('./models');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var session = require('cookie-session');
 
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
@@ -25,16 +26,44 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
 
+app.use(session({
+  name: 'session',
+  keys: ['hi']
+}))
+
+// app.get('/setCookie', function(req, res) {
+//   req.session.secureCookie = 'cookie value';
+//   console.log("cookie: " + req.session.secureCookie)
+//   res.send("Done!")
+// })
+//
+// app.get('/checkCookie', function(req, res) {
+//   console.log("cookie2: " + req.session.secureCookie)
+//   if (req.session.secureCookie === 'cookie value') {
+//     res.send('Good!')
+//   } else {
+//     res.status(400).send('Bad!')
+//   }
+// })
+
 app.get('/', function(req, res) {
   res.render('stage1', {
     stage2: getSecret('stage2')
   });
 });
 
+app.post('/', function(req, res) {
+  if (req.body.pass === "gingerbread") {
+    res.redirect('/stage2')
+  } else {
+    res.redirect('/')
+  }
+})
+
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.user,
+    admin: true,
     stage3: getSecret('stage3')
   });
 });
@@ -42,7 +71,8 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.user = 'bob';
+    req.session.password = 'baseball';
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -50,9 +80,14 @@ app.post('/' + getSecret('stage2'), function(req, res) {
 });
 
 app.get('/' + getSecret('stage3'), function(req, res) {
-  res.render('stage3',{
-    stage3: getSecret('stage3')
-  });
+  if (typeof req.body.secret === "string") {
+    res.render('stage3',{
+      stage3: getSecret('stage3')
+    });
+  } else {
+    res.status(400).send('Error!')
+  }
+
 });
 
 app.post('/' + getSecret('stage3'), function(req, res) {
@@ -83,4 +118,4 @@ app.get('/' + getSecret('stage4'), function(req, res) {
 
 app.use('/exercise2', require('./exercise2'));
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3001);

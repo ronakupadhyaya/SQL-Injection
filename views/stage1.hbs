@@ -20,14 +20,14 @@
     <p class="hint">
       View source code of the page.
     </p>
-    <form id="login" action="/{{stage2}}" style="margin-top: 10px;">
-      Password: <input id="password" type="password">
+    <form id="login" action="/" method="post" style="margin-top: 10px;">
+      Password: <input id="password" type="password" name="pass">
       <input type="submit" value="Login">
     </form>
   </div>
 </div>
 
-<script>
+<!-- <script>
 $('#login').on('submit', function(e) {
   var password = $('#password').val();
   if (password !== 'gingerbread') {
@@ -35,4 +35,4 @@ $('#login').on('submit', function(e) {
     e.preventDefault();
   }
 });
-</script>
+</script> -->
