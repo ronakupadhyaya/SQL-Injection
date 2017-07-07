@@ -7,44 +7,39 @@
       Congrats! You have completed Stage 1.
     </p>
     <p>
-      This page sets an insecure cookie after
-      a successful login. Let's try to mess with it so we can log in as
-      someone else.
+      This page sets an insecure cookie after a successful login. Let's try to mess with it so we can log in as someone else.
     </p>
     <p>
       There's a user <code>bob</code> with a very insecure password
       <code>baseball</code>
     </p>
     <p>
-      Log in as Bob and see what the cookie looks like.
-      Then try to log in as <code>admin</code>.
+      Log in as Bob and see what the cookie looks like. Then try to log in as <code>admin</code>.
     </p>
     <p>
       You can read cookies in the DevTools console
-      <pre><code>document.cookie</code></pre>
-      You can update cookies too:
+      <pre><code>document.cookie</code></pre> You can update cookies too:
       <pre><code>document.cookie = 'COOKIE NAME=COOKIE VALUE'</code></pre>
     </p>
     <p>
       Or you can install
-      <a href="https://chrome.google.com/webstore/detail/cookies/iphcomljdfghbkdcfndaijbokpgddeno?hl=en">Cookies Chrome extension</a>
-      to view and modify your cookies.
+      <a href="https://chrome.google.com/webstore/detail/cookies/iphcomljdfghbkdcfndaijbokpgddeno?hl=en">Cookies Chrome extension</a> to view and modify your cookies.
     </p>
     <button class="btn btn-default" onclick="$('.hint').show()">Reveal hint</button>
     <p class="hint">
       Set the cookie <code>user</code> to the value <code>admin</code>.
     </p>
     {{#unless user}}
-    <form method="post" class="form-inline" style="margin-top: 10px">
-      Username: <input type="text" name="username">
-      Password: <input type="text" name="password">
-      <input type="submit" value="Login">
-    </form>
-    {{else}}
-      <h2>Logged in as: {{user}}</h2>
-      {{#if admin}}
-        <h3>Success, you logged in as admin! <a href="/{{stage3}}">Go to stage 3.</a></h3>
-      {{/if}}
+      <form method="post" class="form-inline" style="margin-top: 10px">
+        Username: <input type="text" name="username"> Password: <input type="text" name="password">
+        <input type="submit" value="Login">
+        <input type="hidden" name="_csurf" value="{{csurfToken}}">
+      </form>
+      {{else}}
+        <h2>Logged in as: {{user}}</h2>
+        {{#if admin}}
+          <h3>Success, you logged in as admin! <a href="/{{stage3}}">Go to stage 3.</a></h3>
+        {{/if}}
     {{/unless}}
   </div>
 </div>

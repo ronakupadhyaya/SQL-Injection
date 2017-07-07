@@ -4,13 +4,10 @@
       <h1>Stage 1: Insecure login form</h1>
     </div>
     <p>
-      Welcome to Steal This App! This app will teach you how to exploit common
-      web security bugs so you can avoid making these mistakes in your own
-      code.
+      Welcome to Steal This App! This app will teach you how to exploit common web security bugs so you can avoid making these mistakes in your own code.
     </p>
     <p>
-      For the first stage we present you an insecure login form. Bypass
-      security by either:
+      For the first stage we present you an insecure login form. Bypass security by either:
       <ul>
         <li>Finding out the password or</li>
         <li>Bypassing the login form</li>
@@ -20,19 +17,20 @@
     <p class="hint">
       View source code of the page.
     </p>
-    <form id="login" action="/{{stage2}}" style="margin-top: 10px;">
-      Password: <input id="password" type="password">
+    <form id="login" action="/" style="margin-top: 10px;" method="post">
+      Password: <input id="password" type="password" name="password">
       <input type="submit" value="Login">
+      <input type="hidden" name="_csurf" value="{{csurfToken}}">
     </form>
   </div>
 </div>
 
 <script>
-$('#login').on('submit', function(e) {
-  var password = $('#password').val();
-  if (password !== 'gingerbread') {
-    alert('Wrong password!');
-    e.preventDefault();
-  }
-});
+  $('#login').on('submit', function(e) {
+    var password = $('#password').val();
+    if (password !== 'gingerbread') {
+      alert('Wrong password!');
+      e.preventDefault();
+    }
+  });
 </script>
