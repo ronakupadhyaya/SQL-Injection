@@ -5,7 +5,7 @@ var path = require('path');
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var models = require('./models');
-
+var cookieSession = require('cookie-session')
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
@@ -14,8 +14,6 @@ var app = express();
 function getSecret(key) {
   return process.env[key] || key;
 }
-
-
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
 
@@ -24,25 +22,41 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
+app.use(cookieSession({
+  name: 'session',
+  keys: ['secret key'],
+}));
+
 
 app.get('/', function(req, res) {
+  console.log("GET / ROUTE");
   res.render('stage1', {
-    stage2: getSecret('stage2')
+    stage2: getSecret('stage2'),
   });
 });
 
+app.post('/', function(req, res) {
+  var password = req.body.password;
+  if(password === 'gingerbread') {
+    res.redirect('/stage2');
+  } else {
+    res.redirect('/');
+  }
+});
+
 app.get('/' + getSecret('stage2'), function(req, res) {
+  console.log("GET / GETSECRET(STAGE2) ROUTE");
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
-    stage3: getSecret('stage3')
+    user: req.session.secureCookie,
+    admin: req.session.secureCookie === 'admin',
+    stage3: getSecret('stage3'),
   });
 });
 
 app.post('/' + getSecret('stage2'), function(req, res) {
-  console.log(req.body);
+  console.log("POST / GETSECRET(STAGE2) ROUTE");
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.secureCookie = req.body.username;
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -51,7 +65,7 @@ app.post('/' + getSecret('stage2'), function(req, res) {
 
 app.get('/' + getSecret('stage3'), function(req, res) {
   res.render('stage3',{
-    stage3: getSecret('stage3')
+    stage3: getSecret('stage3'),
   });
 });
 
@@ -68,6 +82,10 @@ app.post('/' + getSecret('stage3'), function(req, res) {
       res.status(401).json({
         error: "Incorrect key"
       });
+    } else if (typeof secret === "string") {
+      res.status(401).json({
+        error: "Must be a string"
+      })
     } else {
       secret.stage4url = "/" + getSecret('stage4');
       res.json({
