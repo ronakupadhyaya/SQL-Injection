@@ -9,6 +9,8 @@ var models = require('./models');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var session = require('cookie-session');
+
 
 // Secrets default to their name, unless there are process.ENV overrides
 function getSecret(key) {
@@ -18,6 +20,11 @@ function getSecret(key) {
 
 app.engine('hbs', exphbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set('view engine', 'hbs');
+
+app.use(session({
+  name: 'session',
+  keys: ['secret'],
+}))
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -31,10 +38,21 @@ app.get('/', function(req, res) {
   });
 });
 
+app.post('/', function(req, res) {
+  console.log('Syed said so')
+  console.log(req.body.password)
+  if(req.body.password === 'gingerbread'){
+    console.log('correct password gingerbread')
+    res.redirect('/stage2')
+  } else {
+    res.redirect('/')
+  }
+})
+
 app.get('/' + getSecret('stage2'), function(req, res) {
   res.render('stage2', {
-    user: req.cookies.user,
-    admin: req.cookies.user === 'admin',
+    user: req.session.username,
+    admin: req.session.username === 'admin',
     stage3: getSecret('stage3')
   });
 });
@@ -42,7 +60,7 @@ app.get('/' + getSecret('stage2'), function(req, res) {
 app.post('/' + getSecret('stage2'), function(req, res) {
   console.log(req.body);
   if (req.body.username === 'bob' && req.body.password === 'baseball') {
-    res.cookie('user', 'bob');
+    req.session.username = 'bob';
     res.redirect('/' + getSecret('stage2'));
   } else {
     res.sendStatus(401);
@@ -64,6 +82,10 @@ app.post('/' + getSecret('stage3'), function(req, res) {
       res.status(400).json({
         error: error
       });
+    } else if (typeOf(req.body.secret) !== String) {
+      res.status(402).json({
+        error: "Incorrect data type"
+      })
     } else if (!secret) {
       res.status(401).json({
         error: "Incorrect key"

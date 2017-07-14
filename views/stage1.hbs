@@ -21,18 +21,8 @@
       View source code of the page.
     </p>
     <form id="login" action="/{{stage2}}" style="margin-top: 10px;">
-      Password: <input id="password" type="password">
+      Password: <input id="password" type="password" name="password">
       <input type="submit" value="Login">
     </form>
   </div>
 </div>
-
-<script>
-$('#login').on('submit', function(e) {
-  var password = $('#password').val();
-  if (password !== 'gingerbread') {
-    alert('Wrong password!');
-    e.preventDefault();
-  }
-});
-</script>

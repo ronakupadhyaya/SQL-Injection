@@ -7,7 +7,7 @@ var passport = require('./passportInit')(router);
 router.get('/', function(req, res) {
   res.render('login', {
     error: req.query.error,
-    msg: req.query.msg
+    msg: req.query.msg 
   });
 });
 
