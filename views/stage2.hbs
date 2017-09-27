@@ -30,6 +30,7 @@
       <a href="https://chrome.google.com/webstore/detail/cookies/iphcomljdfghbkdcfndaijbokpgddeno?hl=en">Cookies Chrome extension</a>
       to view and modify your cookies.
     </p>
+
     <button class="btn btn-default" onclick="$('.hint').show()">Reveal hint</button>
     <p class="hint">
       Set the cookie <code>user</code> to the value <code>admin</code>.
@@ -38,6 +39,7 @@
     <form method="post" class="form-inline" style="margin-top: 10px">
       Username: <input type="text" name="username">
       Password: <input type="text" name="password">
+      <input type="hidden" name="_csrf" value="{{_csrf}}">
       <input type="submit" value="Login">
     </form>
     {{else}}
