@@ -1,7 +1,11 @@
 "use strict";
 
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || require('./connect'));
+if (! process.env.MONGODB_URI) {
+  console.log('Error: MONGODB_URI is missing. Did you source env.sh ?');
+  process.exit(1);
+}
+mongoose.connect(process.env.MONGODB_URI);
 
 module.exports = {
   User: mongoose.model('user', {
